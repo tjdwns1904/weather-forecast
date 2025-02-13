@@ -3,8 +3,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
 import { api_key, api } from '../constant';
-import { Button } from "react-bootstrap";
 import { WeatherInfo } from "../types/common";
+import NotFound from "./NotFoundPage";
 
 function Weather() {
     const { state } = useLocation();
@@ -138,18 +138,7 @@ function Weather() {
     } else {
         return (
             <div>
-                {!exists &&
-                    <div className="dialog">
-                        <div className="container">
-                            <h2>Location Not Found</h2>
-                            <div className="white-line"></div>
-                            <h3>Cannot find a city named {newCity.current}!
-                                Navigate to home page.</h3>
-                            <Button onClick={() => {
-                                navigate('/');
-                            }}>OK</Button>
-                        </div>
-                    </div>}
+                {!exists && <NotFound city={newCity.current} />}
                 <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
                     <div className="spinner-container"><div className="loading-spinner"></div></div>
                 </div>
