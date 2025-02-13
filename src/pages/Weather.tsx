@@ -1,17 +1,18 @@
-import React, { useEffect, useRef, useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+import { useEffect, useRef, useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { useLocation, useNavigate } from "react-router-dom";
-import { api_key, api } from '../app';
+import { api_key, api } from '../constant';
 import { Button } from "react-bootstrap";
+import { WeatherInfo } from "../types/common";
 
 function Weather() {
     const { state } = useLocation();
     const navigate = useNavigate();
     const newCity = useRef("Your Location");
-    const myFavorites = useRef([]);
+    const myFavorites = useRef<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
-    const [weathers, setWeathers] = useState([]);
+    const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
     const [isStarred, setIsStarred] = useState(false);
     const [exists, setExists] = useState(true);
     const addFav = () => {
@@ -29,7 +30,7 @@ function Weather() {
         setIsStarred(false);
     }
     useEffect(() => {
-        const getWeathers = async (url) => {
+        const getWeathers = async (url: string) => {
             await fetch(url, {
                 method: "Get",
                 headers: {
@@ -61,7 +62,7 @@ function Weather() {
             const url = api + "lat=" + lat + "&lon=" + lon + "&sections=hourly&language=en&units=metric&key=" + api_key;
             getWeathers(url);
         }
-        myFavorites.current = JSON.parse(localStorage.getItem("favorites"));
+        myFavorites.current = localStorage.getItem("favorites") ? JSON.parse(localStorage.getItem("favorites") || "") : [];
         if (myFavorites.current.includes(newCity.current.toLowerCase())) {
             setIsStarred(true);
         }
@@ -86,7 +87,7 @@ function Weather() {
                     <h2>Weather forecast</h2>
                     <div className="white-line"></div>
                     <div className="weather-container">
-                        {weathers.map((weather) => {
+                        {weathers.map((weather: WeatherInfo) => {
                             return (
                                 <ul key={weather.date} className={weather.date.slice(11, 16) === "00:00" ? "v-line" : ""}>
                                     <li>{weather.date.slice(11, 16)}</li>
@@ -107,7 +108,7 @@ function Weather() {
                         <div className="white-line"></div>
                         <div className="wind">
                             <div className="circle">
-                                <h2>{weathers[0].wind.speed}</h2>
+                                <h2>{weathers[0].detail.wind.speed}</h2>
                                 <p>m/s</p>
                             </div>
                         </div>
@@ -117,16 +118,16 @@ function Weather() {
                         <div className="white-line"></div>
                         <ul className="weather-detail">
                             <li><h2>Weather</h2></li>
-                            <li><h1>{weathers[0].summary}</h1></li>
+                            <li><h1>{weathers[0].detail.summary}</h1></li>
                         </ul>
                         <div className="detail-container">
                             <ul className="temp-detail">
                                 <li><h2>Temperature</h2></li>
-                                <li><h1>{weathers[0].temperature}&deg;</h1></li>
+                                <li><h1>{weathers[0].detail.temperature}&deg;</h1></li>
                             </ul>
                             <ul className="cloud-detail">
                                 <li><h2>Cloud Cover</h2></li>
-                                <li><h1>{weathers[0].cloud_cover.total}%</h1></li>
+                                <li><h1>{weathers[0].detail.cloud_cover.total}%</h1></li>
                             </ul>
                         </div>
                     </div>
@@ -149,7 +150,7 @@ function Weather() {
                             }}>OK</Button>
                         </div>
                     </div>}
-                <div className="loading-background" style={{ filter: !exists && 'blur(2px)' }}>
+                <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
                     <div className="spinner-container"><div className="loading-spinner"></div></div>
                 </div>
             </div>

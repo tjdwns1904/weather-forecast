@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
-import Header from "./Header";
-import Footer from "./Footer";
+import { ChangeEvent, useEffect, useState } from "react";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { Button, Form } from "react-bootstrap"
 import { useNavigate } from 'react-router-dom'
-import { api, api_key } from "../app";
+import { api, api_key } from "../constant";
 import { useRef } from "react";
+import { WeatherInfo } from "../types/common";
 
 function Home() {
     const navigate = useNavigate();
@@ -13,12 +14,12 @@ function Home() {
             navigator.geolocation.getCurrentPosition(setPosition);
         }
     }
-    const setPosition = (position) => {
+    const setPosition = (position: { coords: { latitude: any; longitude: any; }; }) => {
         const newLat = position.coords.latitude;
         const newLng = position.coords.longitude;
         getWeather(newLat, newLng);
     }
-    const getWeather = async (lat, lon) => {
+    const getWeather = async (lat: string, lon: string) => {
         const url = api + "lat=" + lat + "&lon=" + lon + "&sections=current&language=en&units=metric&key=" + api_key;
         await fetch(url, {
             method: "GET",
@@ -38,7 +39,7 @@ function Home() {
             })
             .catch(err => console.log(err));
     };
-    const getFavs = async (cName) => {
+    const getFavs = async (cName: string) => {
         const url = api + "place_id=" + cName + "&sections=current&language=en&units=metric&key=" + api_key;
         await fetch(url, {
             method: "Get",
@@ -59,12 +60,12 @@ function Home() {
             })
             .catch(err => console.log(err));
     }
-    const myFavorites = useRef([]);
-    const [favorites, setFavorites] = useState([]);
-    const [weather, setWeather] = useState([]);
+    const myFavorites = useRef<string[]>([]);
+    const [favorites, setFavorites] = useState<WeatherInfo[]>([]);
+    const [weather, setWeather] = useState<WeatherInfo>();
     const [isClicked, setIsClicked] = useState(false);
     const [city, setCity] = useState("");
-    const handleChange = (e) => {
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCity = e.target.value;
         setCity(newCity);
     }
@@ -72,7 +73,9 @@ function Home() {
         if (localStorage.getItem("isClicked")) {
             getLocation();
         }
-        myFavorites.current = JSON.parse(localStorage.getItem("favorites"));
+        if (localStorage.getItem("favorites")) {
+            myFavorites.current = JSON.parse(localStorage.getItem("favorites") || "");
+        }
         if (myFavorites.current.length > 0) {
             myFavorites.current.map(fav => {
                 getFavs(fav);
@@ -96,15 +99,15 @@ function Home() {
                 </div>
                 <div className="byLocation-container">
                     <h1 className="byLocation">Your Location</h1>
-                    {isClicked ?
+                    {isClicked && weather ?
                         <div className="location-container" onClick={() => {
                             const lat = localStorage.getItem("lat");
                             const lon = localStorage.getItem("lon");
                             navigate('/weather', { state: { lat: lat, lon: lon } });
                         }}>
-                            <h1>{Math.floor(weather.current.temperature)}&deg;</h1>
-                            <p><span>Your Location</span><br />{weather.current.summary}</p>
-                            <img src={"/pics/weathers/big/" + weather.current.icon_num + ".png"} alt="" />
+                            <h1>{Math.floor(weather.temperature)}&deg;</h1>
+                            <p><span>Your Location</span><br />{weather.detail.summary}</p>
+                            <img src={"/pics/weathers/big/" + weather.icon + ".png"} alt="" />
                         </div> : <Button className="btn-byLocation" onClick={() => {
                             getLocation();
                         }}>Weather by your location</Button>}
@@ -123,9 +126,9 @@ function Home() {
                                 const cityName = myFavorites.current[favorites.indexOf(fav)];
                                 navigate('/weather', { state: { city: cityName } });
                             }}>
-                                <h1>{Math.floor(fav.current.temperature)}&deg;</h1>
-                                <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.current.summary}</p>
-                                <img src={"/pics/weathers/big/" + fav.current.icon_num + ".png"} alt="" />
+                                <h1>{Math.floor(fav.temperature)}&deg;</h1>
+                                <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.detail.summary}</p>
+                                <img src={"../assets/images/weathers/" + fav.icon + ".png"} alt="" />
                             </div>)}
                 </div>
             </div>
