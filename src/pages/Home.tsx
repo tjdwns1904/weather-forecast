@@ -87,9 +87,11 @@ function Home() {
                 <div>
                     <Form onSubmit={e => {
                         e.preventDefault();
-                        navigate({pathname: "/weather", search: createSearchParams({
-                            city: city
-                        }).toString() });
+                        navigate({
+                            pathname: "/weather", search: createSearchParams({
+                                city: city
+                            }).toString()
+                        });
                     }}>
                         <Form.Group>
                             <Form.Control placeholder="Search..." onChange={handleChange} />
@@ -101,7 +103,10 @@ function Home() {
                     {isClicked && weather ?
                         <div className="location-container" onClick={() => {
                             const { lat, lon } = getPosition();
-                            navigate('/weather', { state: { lat: lat, lon: lon } });
+                            navigate({
+                                pathname: "/weather",
+                                search: createSearchParams({ lat: lat, lon: lon }).toString()
+                            });
                         }}>
                             <h1>{Math.floor(weather.temperature)}&deg;</h1>
                             <p><span>Your Location</span><br />{weather.summary}</p>
@@ -122,7 +127,11 @@ function Home() {
                         favorites.slice(0, myFavorites.current.length).map(fav =>
                             <div key={myFavorites.current[favorites.indexOf(fav)]} className="location-container" onClick={() => {
                                 const cityName = myFavorites.current[favorites.indexOf(fav)];
-                                navigate('/weather', { state: { city: cityName } });
+                                navigate({
+                                    pathname: "/weather", search: createSearchParams({
+                                        city: cityName
+                                    }).toString()
+                                });
                             }}>
                                 <h1>{Math.floor(fav.temperature)}&deg;</h1>
                                 <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.summary}</p>

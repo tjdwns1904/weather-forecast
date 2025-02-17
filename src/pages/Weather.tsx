@@ -10,7 +10,7 @@ import { getWeather } from "../utils/getWeather";
 function Weather() {
     const navigate = useNavigate();
     const [city, setCity] = useState("Your Location");
-    const [searchParams, setSearchParams] = useSearchParams();
+    const [searchParams] = useSearchParams();
     const myFavorites = useRef<string[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
