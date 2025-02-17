@@ -1,46 +1,48 @@
 import { ChangeEvent, useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { Button, Form } from "react-bootstrap"
-import { useNavigate } from 'react-router-dom'
-import { api, api_key } from "../constant";
+import { Button, Form } from "react-bootstrap";
+import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useRef } from "react";
 import { WeatherInfo } from "../types/common";
+import generateURL from "../utils/urlGenerator";
+import { getWeather } from "../utils/getWeather";
 
 function Home() {
     const navigate = useNavigate();
+    const myFavorites = useRef<string[]>([]);
+    const [favorites, setFavorites] = useState<WeatherInfo[]>([]);
+    const [weather, setWeather] = useState<WeatherInfo>();
+    const [isClicked, setIsClicked] = useState(false);
+    const [city, setCity] = useState("");
     const getLocation = () => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(setPosition);
         }
     }
-    const setPosition = (position: { coords: { latitude: any; longitude: any; }; }) => {
+    const setPosition = (position: { coords: { latitude: number; longitude: number; }; }) => {
         const newLat = position.coords.latitude;
-        const newLng = position.coords.longitude;
-        getWeather(newLat, newLng);
+        const newLon = position.coords.longitude;
+        const url = generateURL({ position: { lat: newLat, lon: newLon }, cityID: null, unit: "current" });
+        localStorage.setItem("position", JSON.stringify({ lat: newLat, lon: newLon }));
+        getWeatherInfos(url);
     }
-    const getWeather = async (lat: string, lon: string) => {
-        const url = api + "lat=" + lat + "&lon=" + lon + "&sections=current&language=en&units=metric&key=" + api_key;
-        await fetch(url, {
-            method: "GET",
-            headers: {
-                "Content-Type": 'application/json',
-                "Accept": "application/json",
-                'Access-Control-Allow-Headers': "*",
-                'Access-Control-Allow-Origin': "*",
-                'Access-Control-Allow-Methods': "*"
-            }
-        })
-            .then(res => res.json())
-            .then(res => {
-                setWeather(res);
-                setIsClicked(true);
-                localStorage.setItem('isClicked', 'true');
-            })
-            .catch(err => console.log(err));
+    const getPosition = () => {
+        return JSON.parse(localStorage.getItem("position") || "{ lat: null, lon: null }");
+    }
+    const getWeatherInfos = async (url: string) => {
+        try {
+            const data = await getWeather(url, "current");
+            setWeather({ ...data[0], icon: data[0].icon_num });
+            setIsClicked(true);
+            localStorage.setItem('isClicked', 'true');
+        }
+        catch (err) {
+            console.log(err);
+        }
     };
     const getFavs = async (cName: string) => {
-        const url = api + "place_id=" + cName + "&sections=current&language=en&units=metric&key=" + api_key;
+        const url = generateURL({ position: null, cityID: cName, unit: "current" });
         await fetch(url, {
             method: "Get",
             headers: {
@@ -60,17 +62,13 @@ function Home() {
             })
             .catch(err => console.log(err));
     }
-    const myFavorites = useRef<string[]>([]);
-    const [favorites, setFavorites] = useState<WeatherInfo[]>([]);
-    const [weather, setWeather] = useState<WeatherInfo>();
-    const [isClicked, setIsClicked] = useState(false);
-    const [city, setCity] = useState("");
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCity = e.target.value;
         setCity(newCity);
     }
     useEffect(() => {
         if (localStorage.getItem("isClicked")) {
+            setIsClicked(true);
             getLocation();
         }
         if (localStorage.getItem("favorites")) {
@@ -82,7 +80,6 @@ function Home() {
             })
         }
     }, []);
-    console.log(favorites);
     return (
         <div className="background">
             <Header />
@@ -90,7 +87,9 @@ function Home() {
                 <div>
                     <Form onSubmit={e => {
                         e.preventDefault();
-                        navigate('/weather', { state: { city: city } });
+                        navigate({pathname: "/weather", search: createSearchParams({
+                            city: city
+                        }).toString() });
                     }}>
                         <Form.Group>
                             <Form.Control placeholder="Search..." onChange={handleChange} />
@@ -101,13 +100,12 @@ function Home() {
                     <h1 className="byLocation">Your Location</h1>
                     {isClicked && weather ?
                         <div className="location-container" onClick={() => {
-                            const lat = localStorage.getItem("lat");
-                            const lon = localStorage.getItem("lon");
+                            const { lat, lon } = getPosition();
                             navigate('/weather', { state: { lat: lat, lon: lon } });
                         }}>
                             <h1>{Math.floor(weather.temperature)}&deg;</h1>
-                            <p><span>Your Location</span><br />{weather.detail.summary}</p>
-                            <img src={"/pics/weathers/big/" + weather.icon + ".png"} alt="" />
+                            <p><span>Your Location</span><br />{weather.summary}</p>
+                            <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
                         </div> : <Button className="btn-byLocation" onClick={() => {
                             getLocation();
                         }}>Weather by your location</Button>}
@@ -127,7 +125,7 @@ function Home() {
                                 navigate('/weather', { state: { city: cityName } });
                             }}>
                                 <h1>{Math.floor(fav.temperature)}&deg;</h1>
-                                <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.detail.summary}</p>
+                                <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.summary}</p>
                                 <img src={"../assets/images/weathers/" + fav.icon + ".png"} alt="" />
                             </div>)}
                 </div>

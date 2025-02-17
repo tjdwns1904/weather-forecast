@@ -1,17 +1,13 @@
 export interface WeatherInfo {
     date: string;
     icon: number;
-    temperature: number;
-    detail: WeatherDetail;
-}
-
-interface WeatherDetail {
+    temperature: number; 
     wind: {
         speed: number
     };
     summary: string;
-    temperature: number;
     cloud_cover: {
         total: number
     };
+    icon_num: number;
 }
