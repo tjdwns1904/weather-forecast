@@ -3,15 +3,15 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button, Form } from "react-bootstrap";
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import { useRef } from "react";
 import { WeatherInfo } from "../types/common";
 import generateURL from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
+import { useFavorites } from "../hook/useFavorites";
 
 function Home() {
     const navigate = useNavigate();
-    const myFavorites = useRef<string[]>([]);
-    const [favorites, setFavorites] = useState<WeatherInfo[]>([]);
+    const { favorites } = useFavorites();
+    const [weatherOfFavorites, setWeatherOfFavorites] = useState<WeatherInfo[]>([]);
     const [weather, setWeather] = useState<WeatherInfo>();
     const [isClicked, setIsClicked] = useState(false);
     const [city, setCity] = useState("");
@@ -41,26 +41,19 @@ function Home() {
             console.log(err);
         }
     };
-    const getFavs = async (cName: string) => {
-        const url = generateURL({ position: null, cityID: cName, unit: "current" });
-        await fetch(url, {
-            method: "Get",
-            headers: {
-                "Content-Type": 'application/json',
-                "Accept": "application/json",
-                'Access-Control-Allow-Headers': "*",
-                'Access-Control-Allow-Origin': "*",
-                'Access-Control-Allow-Methods': "*"
-            }
-        })
-            .then(res => res.json())
-            .then(res => {
-                setFavorites(prev => [
-                    ...prev,
-                    res
-                ])
-            })
-            .catch(err => console.log(err));
+    const getFavorites = async () => {
+        try {
+            const promises = favorites.map(async (fav) => {
+                const url = generateURL({ position: null, cityID: fav, unit: "current" });
+                const data = await getWeather(url, "current");
+                return {...data[0], icon: data[0].icon_num};
+            });
+            const results = await Promise.all(promises);
+            results && setWeatherOfFavorites(results);
+        }
+        catch (err) {
+            console.log(err);
+        }
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCity = e.target.value;
@@ -71,15 +64,13 @@ function Home() {
             setIsClicked(true);
             getLocation();
         }
-        if (localStorage.getItem("favorites")) {
-            myFavorites.current = JSON.parse(localStorage.getItem("favorites") || "");
-        }
-        if (myFavorites.current.length > 0) {
-            myFavorites.current.map(fav => {
-                getFavs(fav);
-            })
-        }
     }, []);
+
+    useEffect(() => {
+        if (favorites.length > 0) {
+            getFavorites();
+        }
+    }, [favorites]);
     return (
         <div className="background">
             <Header />
@@ -108,34 +99,35 @@ function Home() {
                                 search: createSearchParams({ lat: lat, lon: lon }).toString()
                             });
                         }}>
-                            <h1>{Math.floor(weather.temperature)}&deg;</h1>
-                            <p><span>Your Location</span><br />{weather.summary}</p>
+                            <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
+                            <p className="mb-0"><span>Your Location</span><br />{weather.summary}</p>
                             <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
                         </div> : <Button className="btn-byLocation" onClick={() => {
                             getLocation();
                         }}>Weather by your location</Button>}
                 </div>
                 <div>
-                    <h1>Your Favorites ({myFavorites.current.length}/4)</h1>
-                    {myFavorites.current.length === 0 ?
+                    <h1>Your Favorites ({favorites.length}/4)</h1>
+                    {favorites.length === 0 ?
                         <div className="empty-list">
                             <div className="fav-icon"></div>
                             <h1>No Favorites Yet!</h1>
-                            <h2>Locations you mark as favorite are shown here</h2>
+                            <h2>Locations you mark as favorite will be listed here</h2>
                         </div>
                         :
-                        favorites.slice(0, myFavorites.current.length).map(fav =>
-                            <div key={myFavorites.current[favorites.indexOf(fav)]} className="location-container" onClick={() => {
-                                const cityName = myFavorites.current[favorites.indexOf(fav)];
+                        weatherOfFavorites.slice(0, favorites.length).map((fav, idx) =>
+                            fav &&
+                            <div key={idx} className="location-container" onClick={() => {
+                                const cityName = favorites[idx];
                                 navigate({
                                     pathname: "/weather", search: createSearchParams({
                                         city: cityName
                                     }).toString()
                                 });
                             }}>
-                                <h1>{Math.floor(fav.temperature)}&deg;</h1>
-                                <p><span>{myFavorites.current[favorites.indexOf(fav)][0].toUpperCase() + myFavorites.current[favorites.indexOf(fav)].slice(1)}</span><br />{fav.summary}</p>
-                                <img src={"../assets/images/weathers/" + fav.icon + ".png"} alt="" />
+                                <h1 className="m-0">{Math.floor(fav.temperature)}&deg;</h1>
+                                <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
+                                <img src={"src/assets/images/weathers/" + fav.icon + ".png"} alt="" />
                             </div>)}
                 </div>
             </div>

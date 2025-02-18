@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -6,28 +6,25 @@ import { WeatherInfo } from "../types/common";
 import NotFound from "./NotFoundPage";
 import generateURL from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
+import { useFavorites } from "../hook/useFavorites";
 
 function Weather() {
     const navigate = useNavigate();
     const [city, setCity] = useState("Your Location");
     const [searchParams] = useSearchParams();
-    const myFavorites = useRef<string[]>([]);
+    const { favorites, addFavorite, removeFavorite } = useFavorites();
     const [isLoading, setIsLoading] = useState(true);
     const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
     const [isStarred, setIsStarred] = useState(false);
     const [exists, setExists] = useState(true);
     const addFav = () => {
-        if (myFavorites.current.length < 4) {
-            myFavorites.current.push(city.toLowerCase());
-            localStorage.setItem("favorites", JSON.stringify(myFavorites.current));
+        if (favorites.length < 4) {
+            addFavorite(city);
             setIsStarred(true);
         }
     }
     const removeFav = () => {
-        const newFav = myFavorites.current.filter(fav => {
-            return fav !== city.toLowerCase();
-        });
-        localStorage.setItem("favorites", JSON.stringify(newFav));
+        removeFavorite(city);
         setIsStarred(false);
     }
 
@@ -47,16 +44,15 @@ function Weather() {
             const cityName = searchParams.get("city");
             cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
             const url = generateURL({ position: null, cityID: cityName, unit: "hourly" });
+            if (cityName && favorites.includes(cityName.toLowerCase())) {
+                setIsStarred(true);
+            }
             getWeatherInfos(url);
         } else {
             const lat = Number(searchParams.get("lat"));
             const lon = Number(searchParams.get("lon"));
             const url = generateURL({ position: { lat: lat, lon: lon }, cityID: null, unit: "hourly" });
             getWeatherInfos(url);
-        }
-        myFavorites.current = localStorage.getItem("favorites") ? JSON.parse(localStorage.getItem("favorites") || "") : [];
-        if (myFavorites.current.includes(city.toLowerCase())) {
-            setIsStarred(true);
         }
     }, []);
     if (!isLoading) {
@@ -100,8 +96,10 @@ function Weather() {
                         <div className="white-line"></div>
                         <div className="wind">
                             <div className="circle">
-                                <h2>{weathers[0].wind.speed}</h2>
-                                <p>m/s</p>
+                                <div>
+                                    <h2>{weathers[0].wind.speed}</h2>
+                                    <p>m/s</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -109,17 +107,17 @@ function Weather() {
                         <h2>Additional Conditions</h2>
                         <div className="white-line"></div>
                         <ul className="weather-detail">
-                            <li><h2>Weather</h2></li>
-                            <li><h1>{weathers[0].summary}</h1></li>
+                            <li><h3 className="text-tertiary fs-4">Weather</h3></li>
+                            <li><h2 className="fs-2">{weathers[0].summary}</h2></li>
                         </ul>
                         <div className="detail-container">
                             <ul className="temp-detail">
-                                <li><h2>Temperature</h2></li>
-                                <li><h1>{weathers[0].temperature}&deg;</h1></li>
+                                <li><h3 className="text-tertiary fs-4">Temperature</h3></li>
+                                <li><h2 className="fs-2">{weathers[0].temperature}&deg;</h2></li>
                             </ul>
                             <ul className="cloud-detail">
-                                <li><h2>Cloud Cover</h2></li>
-                                <li><h1>{weathers[0].cloud_cover.total}%</h1></li>
+                                <li><h3 className="text-tertiary fs-4">Cloud Cover</h3></li>
+                                <li><h2 className="fs-2">{weathers[0].cloud_cover.total}%</h2></li>
                             </ul>
                         </div>
                     </div>
