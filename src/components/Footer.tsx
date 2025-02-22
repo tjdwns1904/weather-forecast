@@ -10,7 +10,7 @@ function Footer() {
                 <a className="insta icon" title="Visit my Instagram" href={INSTA_LINK} target="_blank"></a>
             </div>
             <div className="line"></div>
-            <p>@copyright: 2023 SJH All Rights Reserved.</p>
+            <p>@copyright: 2025 SJH All Rights Reserved.</p>
         </div>
     )
 }

@@ -7,7 +7,7 @@ export const getWeather = async (url: string, timeUnit: string): Promise<Weather
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             'Access-Control-Allow-Headers': "*",
-            'Access-Control-Allow-Origin': "*",
+            'Access-Control-Allow-Origin': "http://localhost:5173/",
             'Access-Control-Allow-Methods': "*"
         }
     });
