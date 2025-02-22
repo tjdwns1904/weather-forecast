@@ -3,14 +3,16 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button, Form } from "react-bootstrap";
 import { createSearchParams, useNavigate } from 'react-router-dom';
-import { WeatherInfo } from "../types/common";
-import generateURL from "../utils/urlGenerator";
+import { PlacePayload, WeatherInfo } from "../types/common";
+import { generateForecastURL, generatePlaceURLByPosition } from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
 import { useFavorites } from "../hook/useFavorites";
+import { getPlaceID } from "../utils/getPlaceID";
 
 function Home() {
     const navigate = useNavigate();
     const { favorites } = useFavorites();
+    const [place, setPlace] = useState<PlacePayload>({ name: "", place_id: "" });
     const [weatherOfFavorites, setWeatherOfFavorites] = useState<WeatherInfo[]>([]);
     const [weather, setWeather] = useState<WeatherInfo>();
     const [isClicked, setIsClicked] = useState(false);
@@ -23,12 +25,18 @@ function Home() {
     const setPosition = (position: { coords: { latitude: number; longitude: number; }; }) => {
         const newLat = position.coords.latitude;
         const newLon = position.coords.longitude;
-        const url = generateURL({ position: { lat: newLat, lon: newLon }, cityID: null, unit: "current" });
-        localStorage.setItem("position", JSON.stringify({ lat: newLat, lon: newLon }));
-        getWeatherInfos(url);
+        const url = generatePlaceURLByPosition({ lat: newLat, lon: newLon });
+        getPlaceInfo(url);
     }
-    const getPosition = () => {
-        return JSON.parse(localStorage.getItem("position") || "{ lat: null, lon: null }");
+    const getPlaceInfo = async (url: string) => {
+        try {
+            const data = await getPlaceID(url);
+            setPlace(data);
+            const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "current" });
+            getWeatherInfos(forecastUrl);
+        } catch (err) {
+            console.log(err);
+        }
     }
     const getWeatherInfos = async (url: string) => {
         try {
@@ -44,9 +52,9 @@ function Home() {
     const getFavorites = async () => {
         try {
             const promises = favorites.map(async (fav) => {
-                const url = generateURL({ position: null, cityID: fav, unit: "current" });
+                const url = generateForecastURL({ cityID: fav, unit: "current" });
                 const data = await getWeather(url, "current");
-                return {...data[0], icon: data[0].icon_num};
+                return { ...data[0], icon: data[0].icon_num };
             });
             const results = await Promise.all(promises);
             results && setWeatherOfFavorites(results);
@@ -93,14 +101,15 @@ function Home() {
                     <h1 className="byLocation">Your Location</h1>
                     {isClicked && weather ?
                         <div className="location-container" onClick={() => {
-                            const { lat, lon } = getPosition();
                             navigate({
-                                pathname: "/weather",
-                                search: createSearchParams({ lat: lat, lon: lon }).toString()
+                                pathname: "/weather", search: createSearchParams({
+                                    city: place.name,
+                                    place_id: place.place_id,
+                                }).toString()
                             });
                         }}>
                             <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
-                            <p className="mb-0"><span>Your Location</span><br />{weather.summary}</p>
+                            <p className="mb-0"><span>{place.name}</span><br />{weather.summary}</p>
                             <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
                         </div> : <Button className="btn-byLocation" onClick={() => {
                             getLocation();

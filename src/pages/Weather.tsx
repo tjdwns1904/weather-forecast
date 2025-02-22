@@ -4,13 +4,14 @@ import Footer from "../components/Footer";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { WeatherInfo } from "../types/common";
 import NotFound from "./NotFoundPage";
-import generateURL from "../utils/urlGenerator";
+import { generateForecastURL, generatePlaceURLByCName } from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
 import { useFavorites } from "../hook/useFavorites";
+import { getPlaceID } from "../utils/getPlaceID";
 
 function Weather() {
     const navigate = useNavigate();
-    const [city, setCity] = useState("Your Location");
+    const [city, setCity] = useState<string>("");
     const [searchParams] = useSearchParams();
     const { favorites, addFavorite, removeFavorite } = useFavorites();
     const [isLoading, setIsLoading] = useState(true);
@@ -39,20 +40,31 @@ function Weather() {
         }
     }
 
+    const getPlaceInfo = async (url: string) => {
+        try {
+            const data = await getPlaceID(url);
+            setCity(data.name);
+            const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
+            getWeatherInfos(forecastUrl);
+        } catch (err) {
+            console.log(err);
+            setExists(false);
+        }
+    }
+
     useEffect(() => {
-        if (searchParams.get("city")) {
-            const cityName = searchParams.get("city");
-            cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
-            const url = generateURL({ position: null, cityID: cityName, unit: "hourly" });
+        const cityName = searchParams.get("city");
+        cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
+        if (searchParams.get("place_id")) {
+            const place_id = searchParams.get("place_id");
+            const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
+            url && getWeatherInfos(url);
+        } else {
+            const url = cityName && generatePlaceURLByCName({ cName: cityName });
             if (cityName && favorites.includes(cityName.toLowerCase())) {
                 setIsStarred(true);
             }
-            getWeatherInfos(url);
-        } else {
-            const lat = Number(searchParams.get("lat"));
-            const lon = Number(searchParams.get("lon"));
-            const url = generateURL({ position: { lat: lat, lon: lon }, cityID: null, unit: "hourly" });
-            getWeatherInfos(url);
+            url && getPlaceInfo(url);
         }
     }, []);
     if (!isLoading) {
@@ -64,11 +76,23 @@ function Weather() {
                 </div>
 
                 <div className="heading">
-                    {isStarred ? <h1 className="cityName">{city}<div className="filled-star" onClick={() => {
-                        removeFav();
-                    }}></div></h1> : city === "Your Location" ? <h1 className="cityName">{city}</h1> : <h1 className="cityName">{city}<div className="star" onClick={() => {
-                        addFav();
-                    }}></div></h1>}
+                    {isStarred ?
+                        <h1 className="cityName">
+                            {city}
+                            <div className="filled-star" onClick={() => {
+                                removeFav();
+                            }}>
+                            </div>
+                        </h1>
+                        :
+                        <h1 className="cityName">
+                            {city}
+                            <div className="star" onClick={() => {
+                                addFav();
+                            }}>
+                            </div>
+                        </h1>
+                    }
 
                 </div>
                 <div className="container">

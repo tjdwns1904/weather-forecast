@@ -11,3 +11,8 @@ export interface WeatherInfo {
     };
     icon_num: number;
 }
+
+export interface PlacePayload {
+    name: string;
+    place_id: string;
+}

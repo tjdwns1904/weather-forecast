@@ -1,15 +1,24 @@
 const baseURL = import.meta.env.VITE_API;
 const key = import.meta.env.VITE_API_KEY;
 
-const generateURL = (query: {
-    position: { lat: number, lon: number } | null,
-    cityID: string | null,
+export const generateForecastURL = (query: {
+    cityID: string,
     unit: string
 }) => {
-    const queryURL = query.cityID ? "place_id=" + query.cityID : "lat=" + query.position?.lat + "&lon=" + query.position?.lon;
+    const queryURL = "point?place_id=" + query.cityID;
     const timeUnit = query.unit === "hourly" ? "&sections=hourly&language=en&units=metric&key=" : "&sections=current&language=en&units=metric&key=";
     const url = baseURL + queryURL + timeUnit + key;
     return url;
 }
 
-export default generateURL;
+export const generatePlaceURLByCName = ({ cName }: { cName: string }) => {
+    const queryURL = "find_places?" + "text=" + cName + "&key=";
+    const url = baseURL + queryURL + key;
+    return url;
+}
+
+export const generatePlaceURLByPosition = ({ lat, lon }: { lat: number, lon: number }) => {
+    const queryURL = "nearest_place?lat=" + lat + "&lon=" + lon + "&key=";
+    const url = baseURL + queryURL + key;
+    return url;
+}
