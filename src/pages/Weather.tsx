@@ -22,7 +22,9 @@ function Weather() {
         if (favorites.length < 4) {
             addFavorite(city);
             setIsStarred(true);
-        }
+        }else{
+            alert("You can have 4 favorites maximum!");
+        } 
     }
     const removeFav = () => {
         removeFavorite(city);

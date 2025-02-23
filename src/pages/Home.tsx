@@ -16,9 +16,12 @@ function Home() {
     const [weatherOfFavorites, setWeatherOfFavorites] = useState<WeatherInfo[]>([]);
     const [weather, setWeather] = useState<WeatherInfo>();
     const [isClicked, setIsClicked] = useState(false);
+    const [isFavLoading, setIsFavLoading] = useState(false);
+    const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [city, setCity] = useState("");
     const getLocation = () => {
         if (navigator.geolocation) {
+            setIsLocationLoading(true);
             navigator.geolocation.getCurrentPosition(setPosition);
         }
     }
@@ -44,6 +47,7 @@ function Home() {
             setWeather({ ...data[0], icon: data[0].icon_num });
             setIsClicked(true);
             localStorage.setItem('isClicked', 'true');
+            setIsLocationLoading(false);
         }
         catch (err) {
             console.log(err);
@@ -51,6 +55,7 @@ function Home() {
     };
     const getFavorites = async () => {
         try {
+            setIsFavLoading(true);
             const promises = favorites.map(async (fav) => {
                 const url = generateForecastURL({ cityID: fav, unit: "current" });
                 const data = await getWeather(url, "current");
@@ -61,6 +66,9 @@ function Home() {
         }
         catch (err) {
             console.log(err);
+        }
+        finally {
+            setIsFavLoading(false);
         }
     }
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -99,19 +107,25 @@ function Home() {
                 </div>
                 <div className="byLocation-container">
                     <h1 className="byLocation">Your Location</h1>
-                    {isClicked && weather ?
-                        <div className="location-container" onClick={() => {
-                            navigate({
-                                pathname: "/weather", search: createSearchParams({
-                                    city: place.name,
-                                    place_id: place.place_id,
-                                }).toString()
-                            });
-                        }}>
-                            <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
-                            <p className="mb-0"><span>{place.name}</span><br />{weather.summary}</p>
-                            <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
-                        </div> : <Button className="btn-byLocation" onClick={() => {
+                    {isClicked ?
+                        isLocationLoading ?
+                            <div className="loading-spinner mx-auto my-5" />
+                            :
+                            weather &&
+                            <div className="location-container" onClick={() => {
+                                navigate({
+                                    pathname: "/weather", search: createSearchParams({
+                                        city: place.name,
+                                        place_id: place.place_id,
+                                    }).toString()
+                                });
+                            }}>
+                                <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
+                                <p className="mb-0"><span>{place.name}</span><br />{weather.summary}</p>
+                                <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
+                            </div>
+                        :
+                        <Button className="btn-byLocation" onClick={() => {
                             getLocation();
                         }}>Weather by your location</Button>}
                 </div>
@@ -124,20 +138,22 @@ function Home() {
                             <h2>Locations you mark as favorite will be listed here</h2>
                         </div>
                         :
-                        weatherOfFavorites.slice(0, favorites.length).map((fav, idx) =>
-                            fav &&
-                            <div key={idx} className="location-container" onClick={() => {
-                                const cityName = favorites[idx];
-                                navigate({
-                                    pathname: "/weather", search: createSearchParams({
-                                        city: cityName
-                                    }).toString()
-                                });
-                            }}>
-                                <h1 className="m-0">{Math.floor(fav.temperature)}&deg;</h1>
-                                <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
-                                <img src={"src/assets/images/weathers/" + fav.icon + ".png"} alt="" />
-                            </div>)}
+                        isFavLoading ?
+                            <div className="loading-spinner mx-auto my-5" />
+                            : weatherOfFavorites.slice(0, favorites.length).map((fav, idx) =>
+                                fav &&
+                                <div key={idx} className="location-container" onClick={() => {
+                                    const cityName = favorites[idx];
+                                    navigate({
+                                        pathname: "/weather", search: createSearchParams({
+                                            city: cityName
+                                        }).toString()
+                                    });
+                                }}>
+                                    <h1 className="m-0">{Math.floor(fav.temperature)}&deg;</h1>
+                                    <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
+                                    <img src={"src/assets/images/weathers/" + fav.icon + ".png"} alt="" />
+                                </div>)}
                 </div>
             </div>
             <Footer />
