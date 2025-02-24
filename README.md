@@ -1,50 +1,45 @@
-# React + TypeScript + Vite
+<div align="center">
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<!-- logo -->
+### SKYCAST <img src="https://github.com/tjdwns1904/weather-forecast/blob/main/src/assets/images/weather-app.png" width="30"/>
 
-Currently, two official plugins are available:
+[<img src="https://img.shields.io/badge/프로젝트 기간-2023.06.01~2023.08.30 & 2025.02.01~2025.02.24-blue?style=flat&logo=&logoColor=white" />]()
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+</div> 
 
-## Expanding the ESLint configuration
+## 📝 소개
+기상예보 사이트 입니다.    
+   
+검색창을 통해 도시 이름을 검색하여 해당 도시의 기상정보를 불러올 수 있습니다.   
+사용자의 위치에 기반하여 현재 위치하고 있는 도시의 기상정보도 불러올 수 있습니다.   
+그 뿐만 아니라, 자주 검색하는 도시들을 즐겨찾기하여 검색할 필요없이 기상정보를 불러올 수 있습니다.   
+<br />
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### 화면 구성
+|홈페이지|
+|:---:|
+|<img src="https://github.com/user-attachments/assets/51be65ca-08ed-437a-936f-f60d1c774a82" width="450"/>|
+|검색, 사용자의 현재 위치, 즐겨찾기 리스트에 기반하여 기상정보를 조회할 수 있습니다.|
 
-- Configure the top-level `parserOptions` property like this:
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+|기상예보 조회|
+|:---:|
+|<img src="https://github.com/user-attachments/assets/ea5e5952-f447-456f-a83d-95a31d5c1bd7" width="450"/>|
+|사용자의 입력에 따라 검색된 도시의 기상 정보를 보여주는 페이지입니다.|
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+<br />
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## ⚙ 기술 스택
+### Front-end
+<div>
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/TypeScript.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/React.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Bootstrap.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/HTMLCSS.png?raw=true" width="80">
+</div>
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+### Tools
+<div>
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Github.png?raw=true" width="80">
+<img src="https://github.com/yewon-Noh/readme-template/blob/main/skills/Notion.png?raw=true" width="80">
+</div>
