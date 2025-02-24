@@ -1,70 +1,72 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useLocation, useNavigate } from "react-router-dom";
-import { api_key, api } from '../constant';
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { WeatherInfo } from "../types/common";
 import NotFound from "./NotFoundPage";
+import { generateForecastURL, generatePlaceURLByCName } from "../utils/urlGenerator";
+import { getWeather } from "../utils/getWeather";
+import { useFavorites } from "../hook/useFavorites";
+import { getPlaceID } from "../utils/getPlaceID";
 
 function Weather() {
-    const { state } = useLocation();
     const navigate = useNavigate();
-    const newCity = useRef("Your Location");
-    const myFavorites = useRef<string[]>([]);
+    const [city, setCity] = useState<string>("");
+    const [searchParams] = useSearchParams();
+    const { favorites, addFavorite, removeFavorite } = useFavorites();
     const [isLoading, setIsLoading] = useState(true);
     const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
     const [isStarred, setIsStarred] = useState(false);
     const [exists, setExists] = useState(true);
     const addFav = () => {
-        if (myFavorites.current.length < 4) {
-            myFavorites.current.push(newCity.current.toLowerCase());
-            localStorage.setItem("favorites", JSON.stringify(myFavorites.current));
+        if (favorites.length < 4) {
+            addFavorite(city);
             setIsStarred(true);
+        } else {
+            alert("You can have 4 favorites maximum!");
         }
     }
     const removeFav = () => {
-        const newFav = myFavorites.current.filter(fav => {
-            return fav !== newCity.current.toLowerCase();
-        });
-        localStorage.setItem("favorites", JSON.stringify(newFav));
+        removeFavorite(city);
         setIsStarred(false);
     }
+
+    const getWeatherInfos = async (url: string) => {
+        try {
+            const data = await getWeather(url, "hourly");
+            setWeathers(data);
+            setIsLoading(false);
+        } catch (err) {
+            console.log(err);
+            setExists(false);
+        }
+    }
+
+    const getPlaceInfo = async (url: string) => {
+        try {
+            const data = await getPlaceID(url);
+            setCity(data.name);
+            const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
+            getWeatherInfos(forecastUrl);
+        } catch (err) {
+            console.log(err);
+            setExists(false);
+        }
+    }
+
     useEffect(() => {
-        const getWeathers = async (url: string) => {
-            await fetch(url, {
-                method: "Get",
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json',
-                    'Access-Control-Allow-Headers': "*",
-                    'Access-Control-Allow-Origin': "*",
-                    'Access-Control-Allow-Methods': "*"
-                }
-            })
-                .then(res => res.json())
-                .then(res => {
-                    setWeathers(res.hourly.data);
-                    setIsLoading(false);
-                })
-                .catch(err => {
-                    console.log(err);
-                    setExists(false);
-                });
-        }
-        if (state.city) {
-            const city = state.city;
-            newCity.current = city.charAt(0).toUpperCase() + city.slice(1);
-            const url = api + "place_id=" + city + "&sections=hourly&language=en&units=metric&key=" + api_key;
-            getWeathers(url);
+        const cityName = searchParams.get("city");
+        cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
+        if (searchParams.get("place_id")) {
+            const place_id = searchParams.get("place_id");
+            const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
+            url && getWeatherInfos(url);
         } else {
-            const lat = state.lat;
-            const lon = state.lon;
-            const url = api + "lat=" + lat + "&lon=" + lon + "&sections=hourly&language=en&units=metric&key=" + api_key;
-            getWeathers(url);
-        }
-        myFavorites.current = localStorage.getItem("favorites") ? JSON.parse(localStorage.getItem("favorites") || "") : [];
-        if (myFavorites.current.includes(newCity.current.toLowerCase())) {
-            setIsStarred(true);
+            const url = cityName && generatePlaceURLByCName({ cName: cityName });
+            if (cityName && favorites.includes(cityName.toLowerCase())) {
+                setIsStarred(true);
+            }
+            url && getPlaceInfo(url);
         }
     }, []);
     if (!isLoading) {
@@ -76,11 +78,23 @@ function Weather() {
                 </div>
 
                 <div className="heading">
-                    {isStarred ? <h1 className="cityName">{newCity.current}<div className="filled-star" onClick={() => {
-                        removeFav();
-                    }}></div></h1> : newCity.current === "Your Location" ? <h1 className="cityName">{newCity.current}</h1> : <h1 className="cityName">{newCity.current}<div className="star" onClick={() => {
-                        addFav();
-                    }}></div></h1>}
+                    {isStarred ?
+                        <h1 className="cityName">
+                            {city}
+                            <div className="filled-star" onClick={() => {
+                                removeFav();
+                            }}>
+                            </div>
+                        </h1>
+                        :
+                        <h1 className="cityName">
+                            {city}
+                            <div className="star" onClick={() => {
+                                addFav();
+                            }}>
+                            </div>
+                        </h1>
+                    }
 
                 </div>
                 <div className="container">
@@ -91,8 +105,8 @@ function Weather() {
                             return (
                                 <ul key={weather.date} className={weather.date.slice(11, 16) === "00:00" ? "v-line" : ""}>
                                     <li>{weather.date.slice(11, 16)}</li>
-                                    <li >
-                                        <img src={"/pics/weathers/big/" + weather.icon + ".png"} alt="/pics/weathers/big/1.png" />
+                                    <li>
+                                        <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt={weather.summary} />
                                     </li>
                                     <li>{Math.floor(weather.temperature)}&deg;</li>
                                 </ul>
@@ -103,32 +117,32 @@ function Weather() {
                     </div>
                 </div>
                 <div className="additional-container">
-                    <div className="wind-container">
+                    <div className="container me-5">
                         <h2>Wind</h2>
                         <div className="white-line"></div>
                         <div className="wind">
                             <div className="circle">
-                                <h2>{weathers[0].detail.wind.speed}</h2>
-                                <p>m/s</p>
+                                <div>
+                                    <h2 className="mb-3">{weathers[0].wind.speed}</h2>
+                                    <p>m/s</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div className="container">
                         <h2>Additional Conditions</h2>
                         <div className="white-line"></div>
-                        <ul className="weather-detail">
-                            <li><h2>Weather</h2></li>
-                            <li><h1>{weathers[0].detail.summary}</h1></li>
-                        </ul>
-                        <div className="detail-container">
-                            <ul className="temp-detail">
-                                <li><h2>Temperature</h2></li>
-                                <li><h1>{weathers[0].detail.temperature}&deg;</h1></li>
-                            </ul>
-                            <ul className="cloud-detail">
-                                <li><h2>Cloud Cover</h2></li>
-                                <li><h1>{weathers[0].detail.cloud_cover.total}%</h1></li>
-                            </ul>
+                        <div className="my-5">
+                            <h3 className="text-tertiary fs-4">Weather</h3>
+                            <h2 className="fs-2">{weathers[0].summary}</h2>
+                        </div>
+                        <div className="mb-5">
+                            <h3 className="text-tertiary fs-4">Temperature</h3>
+                            <h2 className="fs-2">{weathers[0].temperature}&deg;</h2>
+                        </div>
+                        <div className="mb-5">
+                            <h3 className="text-tertiary fs-4">Cloud Cover</h3>
+                            <h2 className="fs-2">{weathers[0].cloud_cover.total}%</h2>
                         </div>
                     </div>
                 </div>
@@ -138,7 +152,7 @@ function Weather() {
     } else {
         return (
             <div>
-                {!exists && <NotFound city={newCity.current} />}
+                {!exists && <NotFound city={city} />}
                 <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
                     <div className="spinner-container"><div className="loading-spinner"></div></div>
                 </div>

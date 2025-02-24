@@ -1,21 +1,18 @@
 :root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    line-height: 1.5;
+    font-weight: 400;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  margin: 0;
-  min-width: 320px;
-  min-height: 100vh;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+    margin: 0;
+    min-width: 320px;
+    min-height: 100vh;
+    font-size: calc(10px + 2vmin);
 }
 
 .background {
@@ -27,8 +24,8 @@ body {
 
 .brand {
     content: url("./assets/images/weather-app.png");
-    width: 45px;
-    height: 45px;
+    width: 60px;
+    height: 65px;
     margin: 3rem 0;
 }
 
@@ -55,7 +52,7 @@ input.form-control {
 }
 
 h1 {
-    color: #fff;
+    color: #e6e4e4;
     margin: 3rem 0 2rem 0;
     font-size: 3rem;
 }
@@ -152,11 +149,11 @@ table {
     border: 1px solid rgb(100, 100, 100);
     background: rgba(65, 65, 65, 0.707);
     color: #e6e4e4;
-    padding: 0 2rem;
+    padding: 20px 2rem;
     margin-bottom: 2rem;
 }
 
-.location-container{
+.location-container {
     display: flex;
     border-radius: 10px;
     border: 1px solid rgb(100, 100, 100);
@@ -165,34 +162,25 @@ table {
     padding: 2rem 2rem;
     margin-bottom: 2rem;
     position: relative;
-    justify-content: center;
+    justify-content: space-between;
+    align-items: center;
     cursor: pointer;
     transition: 0.3s ease-in-out;
-    &:hover{
+
+    &:hover {
         transform: translate(0, -2px);
         box-shadow: 15px 15px 40px rgba(49, 49, 49, 0.45);
     }
 }
-.location-container h1{
-    left: 2rem;
-    top: -8px;
-    position: absolute;
-}
 
-.location-container p{
+.location-container p {
     vertical-align: middle;
     text-align: center;
 }
 
-.location-container span{
+.location-container span {
     font-size: 1.5rem;
     font-weight: bold;
-}
-
-.location-container img{
-    position: absolute;
-    right: 2rem;
-    top: 38px;
 }
 
 .weather-container {
@@ -213,11 +201,12 @@ li {
 
 .white-line {
     border: 1px solid rgb(255, 255, 255, 0.4);
+    margin: 20px 0;
 }
 
 
 ::-webkit-scrollbar {
-    width: 20px;
+    width: 10px;
     height: 30px;
 }
 
@@ -243,7 +232,7 @@ li {
         border-bottom: 5px solid #e6e4e4ba;
         width: 12px;
         height: 12px;
-        transform: rotate(135deg) translate(0, -14px);
+        transform: rotate(135deg) translate(0, -20px);
         position: absolute;
     }
 
@@ -293,77 +282,76 @@ li {
     border-left: 2px solid rgb(255, 255, 255, 0.4);
 }
 
-.wind{
-    background: url('./assets/images/compass.png') no-repeat -23px center/110%;
-    text-align: center;
-    padding: 6rem;
-}
-
-.additional-container{
+.wind {
+    background: url('./assets/images/compass.png') no-repeat center/80%;
     display: flex;
-    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 9rem;
 }
 
-.circle{
+.additional-container {
+    display: flex;
+}
+
+.circle {
     background: #85858580;
-    vertical-align: middle;
-    width: 130px;
-    height: 130px;
-    border-radius: 65px;
+    position: relative;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
     text-align: center;
 }
 
-.circle h2{
+.circle div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.circle h2 {
     font-size: 2rem;
     font-weight: 900;
-    vertical-align: middle;
-    display: inline-block;
-    line-height: normal;
 }
 
-.circle p{
+.circle p {
     margin-top: -1.5rem;
+    margin-bottom: 0;
     vertical-align: middle;
 }
 
-.wind-container{
-    border-radius: 10px;
-    border: 1px solid rgb(100, 100, 100);
-    background: rgba(65, 65, 65, 0.707);
-    color: #e6e4e4;
-    padding: 0 2rem;
-    margin-bottom: 2rem;
-    margin-right: 1rem;
-}
-
-.heading{
+.heading {
     position: relative;
 }
 
-.heading div{
+.heading div {
     position: absolute;
     content: url('./assets/images/outline-star.png');
     opacity: 0.6;
     cursor: pointer;
     right: 0;
     top: 20px;
-    &:hover{
+
+    &:hover {
         opacity: 1;
     }
 }
-.heading .star{
+
+.heading .star {
     content: url('./assets/images/outline-star.png');
 }
 
-.heading .filled-star{
+.heading .filled-star {
     content: url('./assets/images/filled-star.png');
 }
 
-@keyframes spinner{
-    0%{
+@keyframes spinner {
+    0% {
         opacity: 0;
     }
-    100%{
+
+    100% {
         opacity: 0.8;
         transform: scale(1.5);
     }
@@ -377,7 +365,7 @@ li {
     animation-direction: alternate;
 }
 
-.spinner-container{
+.spinner-container {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -385,53 +373,69 @@ li {
     margin-left: -50px;
 }
 
-.loading-background{
+.loading-background {
     height: 100vh;
     background: url("./assets/images/bg.jpg");
 }
 
-.weather-detail{
-    margin-right: 5rem;
-    margin-bottom: 4rem;
-}
-
-.detail-container{
+.detail-container {
     display: flex;
     flex-wrap: wrap;
-    margin-top: -10px;
 }
 
-.additional-container ul{
-    padding: 0;
-    text-align: left;
-}
-
-.cloud-detail{
-    margin-right: 11.7rem;
-}
-
-.temp-detail{
-    margin-right: 11.7rem;
-}
-
-.dialog{
+.dialog {
     position: absolute;
     left: 50%;
-    margin-left: -280px;
-    margin-top: 10px;
-    padding: 1rem 0.5rem;
+    top: 0;
+    transform: translateX(-50%);
+    padding: 1rem;
     z-index: 1;
 }
 
-.dialog button{
+.dialog button {
     padding: 5px 1rem;
     background-color: rgba(88, 99, 254, 0.737);
     border-radius: 6px;
     border: none;
-    margin: 1rem 0 2rem 0;
+    margin: 1rem 0;
     cursor: pointer;
     position: relative;
-    &:hover{
+
+    &:hover {
         box-shadow: 0 0 10px rgba(88, 99, 254, 0.688);
+    }
+}
+
+@media (max-width: 1024px) {
+    .wind-container {
+        width: 100%;
+    }
+
+    .additional-container {
+        display: block;
+    }
+
+    .weather-detail {
+        margin-bottom: 30px;
+    }
+}
+
+@media (max-width: 767px) {
+    .background {
+        padding: 0 2rem;
+    }
+
+    input.form-control {
+        width: 100%;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1024px) {
+    .background {
+        padding: 0 6rem;
+    }
+
+    input.form-control {
+        width: 45%;
     }
 }
