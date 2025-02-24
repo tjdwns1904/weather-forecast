@@ -283,9 +283,11 @@ li {
 }
 
 .wind {
-    background: url('./assets/images/compass.png') no-repeat -23px center/110%;
-    text-align: center;
-    padding: 6rem;
+    background: url('./assets/images/compass.png') no-repeat center/80%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 9rem;
 }
 
 .additional-container {
@@ -295,8 +297,8 @@ li {
 .circle {
     background: #85858580;
     position: relative;
-    width: 130px;
-    height: 130px;
+    width: 150px;
+    height: 150px;
     border-radius: 50%;
     text-align: center;
 }
@@ -317,16 +319,6 @@ li {
     margin-top: -1.5rem;
     margin-bottom: 0;
     vertical-align: middle;
-}
-
-.wind-container {
-    border-radius: 10px;
-    border: 1px solid rgb(100, 100, 100);
-    background: rgba(65, 65, 65, 0.707);
-    color: #e6e4e4;
-    padding: 20px 2rem;
-    margin-bottom: 2rem;
-    margin-right: 1rem;
 }
 
 .heading {
@@ -386,27 +378,9 @@ li {
     background: url("./assets/images/bg.jpg");
 }
 
-.weather-detail {
-    margin-right: 5rem;
-    margin-bottom: 54px;
-}
-
 .detail-container {
     display: flex;
     flex-wrap: wrap;
-}
-
-.additional-container ul {
-    padding: 0;
-    text-align: left;
-}
-
-.cloud-detail {
-    margin-right: 11.7rem;
-}
-
-.temp-detail {
-    margin-right: 11.7rem;
 }
 
 .dialog {
@@ -443,13 +417,6 @@ li {
 
     .weather-detail {
         margin-bottom: 30px;
-    }
-
-    .wind {
-        background: url('./assets/images/compass.png') no-repeat center/80%;
-        padding: 8rem;
-        display: flex;
-        justify-content: center;
     }
 }
 

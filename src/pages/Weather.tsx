@@ -22,9 +22,9 @@ function Weather() {
         if (favorites.length < 4) {
             addFavorite(city);
             setIsStarred(true);
-        }else{
+        } else {
             alert("You can have 4 favorites maximum!");
-        } 
+        }
     }
     const removeFav = () => {
         removeFavorite(city);
@@ -117,13 +117,13 @@ function Weather() {
                     </div>
                 </div>
                 <div className="additional-container">
-                    <div className="wind-container">
+                    <div className="container me-5">
                         <h2>Wind</h2>
                         <div className="white-line"></div>
                         <div className="wind">
                             <div className="circle">
                                 <div>
-                                    <h2>{weathers[0].wind.speed}</h2>
+                                    <h2 className="mb-3">{weathers[0].wind.speed}</h2>
                                     <p>m/s</p>
                                 </div>
                             </div>
@@ -132,19 +132,17 @@ function Weather() {
                     <div className="container">
                         <h2>Additional Conditions</h2>
                         <div className="white-line"></div>
-                        <ul className="weather-detail">
-                            <li><h3 className="text-tertiary fs-4">Weather</h3></li>
-                            <li><h2 className="fs-2">{weathers[0].summary}</h2></li>
-                        </ul>
-                        <div className="detail-container">
-                            <ul className="temp-detail">
-                                <li><h3 className="text-tertiary fs-4">Temperature</h3></li>
-                                <li><h2 className="fs-2">{weathers[0].temperature}&deg;</h2></li>
-                            </ul>
-                            <ul className="cloud-detail">
-                                <li><h3 className="text-tertiary fs-4">Cloud Cover</h3></li>
-                                <li><h2 className="fs-2">{weathers[0].cloud_cover.total}%</h2></li>
-                            </ul>
+                        <div className="my-5">
+                            <h3 className="text-tertiary fs-4">Weather</h3>
+                            <h2 className="fs-2">{weathers[0].summary}</h2>
+                        </div>
+                        <div className="mb-5">
+                            <h3 className="text-tertiary fs-4">Temperature</h3>
+                            <h2 className="fs-2">{weathers[0].temperature}&deg;</h2>
+                        </div>
+                        <div className="mb-5">
+                            <h3 className="text-tertiary fs-4">Cloud Cover</h3>
+                            <h2 className="fs-2">{weathers[0].cloud_cover.total}%</h2>
                         </div>
                     </div>
                 </div>
