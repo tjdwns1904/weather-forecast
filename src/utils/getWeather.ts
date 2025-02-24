@@ -1,15 +1,7 @@
-import axios from "axios";
 import { WeatherInfo } from "../types/common";
+import { axiosInstance } from "./axios";
 
 export const getWeather = async (url: string, timeUnit: string): Promise<WeatherInfo[]> => {
-    const res = await axios.get(url, {
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            'Access-Control-Allow-Headers': "*",
-            'Access-Control-Allow-Origin': "http://localhost:5173/",
-            'Access-Control-Allow-Methods': "*"
-        }
-    });
+    const res = await axiosInstance.get(url);
     return timeUnit === "hourly" ? res.data.hourly.data : [res.data.current];
 }
