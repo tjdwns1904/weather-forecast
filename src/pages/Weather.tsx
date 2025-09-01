@@ -105,7 +105,7 @@ function Weather() {
                                 <ul key={weather.date} className={weather.date.slice(11, 16) === "00:00" ? "v-line" : ""}>
                                     <li>{weather.date.slice(11, 16)}</li>
                                     <li>
-                                        <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt={weather.summary} />
+                                        <img src={`../../src/assets/images/weathers/${weather.icon}.png`} alt={weather.summary} />
                                     </li>
                                     <li>{Math.floor(weather.temperature)}&deg;</li>
                                 </ul>
