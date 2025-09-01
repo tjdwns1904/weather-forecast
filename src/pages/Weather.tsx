@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -41,20 +42,18 @@ function Weather() {
             setExists(false);
         }
     }
-
-    const getPlaceInfo = async (url: string) => {
-        try {
-            const data = await getPlaceID(url);
-            setCity(data.name);
-            const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
-            getWeatherInfos(forecastUrl);
-        } catch (err) {
-            console.log(err);
-            setExists(false);
-        }
-    }
-
     useEffect(() => {
+        const getPlaceInfo = async (url: string) => {
+            try {
+                const data = await getPlaceID(url);
+                setCity(data.name);
+                const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
+                getWeatherInfos(forecastUrl);
+            } catch (err) {
+                console.log(err);
+                setExists(false);
+            }
+        }
         const cityName = searchParams.get("city");
         cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
         if (searchParams.get("place_id")) {
@@ -68,7 +67,7 @@ function Weather() {
             }
             url && getPlaceInfo(url);
         }
-    }, []);
+    }, [favorites, searchParams]);
     if (!isLoading) {
         return (
             <div className="background">
