@@ -23,7 +23,7 @@ body {
 }
 
 .brand {
-    content: url("./assets/images/weather-app.png");
+    content: url("/weather-app.png");
     width: 60px;
     height: 65px;
     margin: 3rem 0;
