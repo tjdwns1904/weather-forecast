@@ -19,7 +19,7 @@ export function useFavorites() {
     const removeFavorite = useCallback((cName: string) => {
         cName = cName.toLowerCase();
         setFavorites(favorites.filter((city) => cName !== city));
-    }, [setFavorites]);
+    }, [setFavorites, favorites]);
 
     return { favorites, addFavorite, removeFavorite };
 }

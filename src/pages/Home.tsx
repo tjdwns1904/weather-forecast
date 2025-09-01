@@ -6,7 +6,7 @@ import { createSearchParams, useNavigate } from 'react-router-dom';
 import { PlacePayload, WeatherInfo } from "../types/common";
 import { generateForecastURL, generatePlaceURLByPosition } from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
-import { useFavorites } from "../hook/useFavorites";
+import { useFavorites } from "../hooks/useFavorites";
 import { getPlaceID } from "../utils/getPlaceID";
 
 function Home() {

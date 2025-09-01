@@ -6,7 +6,7 @@ import { WeatherInfo } from "../types/common";
 import NotFound from "./NotFoundPage";
 import { generateForecastURL, generatePlaceURLByCName } from "../utils/urlGenerator";
 import { getWeather } from "../utils/getWeather";
-import { useFavorites } from "../hook/useFavorites";
+import { useFavorites } from "../hooks/useFavorites";
 import { getPlaceID } from "../utils/getPlaceID";
 
 function Weather() {
