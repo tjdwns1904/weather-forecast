@@ -1,4 +1,5 @@
-import { ChangeEvent, useEffect, useState } from "react";
+/* eslint-disable @typescript-eslint/no-unused-expressions */
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { Button, Form } from "react-bootstrap";
@@ -19,19 +20,8 @@ function Home() {
     const [isFavLoading, setIsFavLoading] = useState(false);
     const [isLocationLoading, setIsLocationLoading] = useState(false);
     const [city, setCity] = useState("");
-    const getLocation = () => {
-        if (navigator.geolocation) {
-            setIsLocationLoading(true);
-            navigator.geolocation.getCurrentPosition(setPosition);
-        }
-    }
-    const setPosition = (position: { coords: { latitude: number; longitude: number; }; }) => {
-        const newLat = position.coords.latitude;
-        const newLon = position.coords.longitude;
-        const url = generatePlaceURLByPosition({ lat: newLat, lon: newLon });
-        getPlaceInfo(url);
-    }
-    const getPlaceInfo = async (url: string) => {
+
+    const getPlaceInfo = useCallback(async (url: string) => {
         try {
             const data = await getPlaceID(url);
             setPlace(data);
@@ -40,7 +30,22 @@ function Home() {
         } catch (err) {
             console.log(err);
         }
-    }
+    }, []);
+
+    const setPosition = useCallback((position: { coords: { latitude: number; longitude: number; }; }) => {
+        const newLat = position.coords.latitude;
+        const newLon = position.coords.longitude;
+        const url = generatePlaceURLByPosition({ lat: newLat, lon: newLon });
+        getPlaceInfo(url);
+    }, [getPlaceInfo]);
+
+    const getLocation = useCallback(() => {
+        if (navigator.geolocation) {
+            setIsLocationLoading(true);
+            navigator.geolocation.getCurrentPosition(setPosition);
+        }
+    }, [setPosition]);
+    
     const getWeatherInfos = async (url: string) => {
         try {
             const data = await getWeather(url, "current");
@@ -53,24 +58,7 @@ function Home() {
             console.log(err);
         }
     };
-    const getFavorites = async () => {
-        try {
-            setIsFavLoading(true);
-            const promises = favorites.map(async (fav) => {
-                const url = generateForecastURL({ cityID: fav, unit: "current" });
-                const data = await getWeather(url, "current");
-                return { ...data[0], icon: data[0].icon_num };
-            });
-            const results = await Promise.all(promises);
-            results && setWeatherOfFavorites(results);
-        }
-        catch (err) {
-            console.log(err);
-        }
-        finally {
-            setIsFavLoading(false);
-        }
-    }
+
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newCity = e.target.value;
         setCity(newCity);
@@ -80,9 +68,27 @@ function Home() {
             setIsClicked(true);
             getLocation();
         }
-    }, []);
+    }, [getLocation]);
 
     useEffect(() => {
+        const getFavorites = async () => {
+            try {
+                setIsFavLoading(true);
+                const promises = favorites.map(async (fav) => {
+                    const url = generateForecastURL({ cityID: fav, unit: "current" });
+                    const data = await getWeather(url, "current");
+                    return { ...data[0], icon: data[0].icon_num };
+                });
+                const results = await Promise.all(promises);
+                results && setWeatherOfFavorites(results);
+            }
+            catch (err) {
+                console.log(err);
+            }
+            finally {
+                setIsFavLoading(false);
+            }
+        }
         if (favorites.length > 0) {
             getFavorites();
         }
@@ -122,7 +128,7 @@ function Home() {
                             }}>
                                 <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
                                 <p className="mb-0"><span>{place.name}</span><br />{weather.summary}</p>
-                                <img src={"src/assets/images/weathers/" + weather.icon + ".png"} alt="" />
+                                <img src={`/weathers/${weather.icon}.png`} alt="" />
                             </div>
                         :
                         <Button className="btn-byLocation" onClick={() => {
@@ -152,7 +158,7 @@ function Home() {
                                 }}>
                                     <h1 className="m-0">{Math.floor(fav.temperature)}&deg;</h1>
                                     <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
-                                    <img src={"src/assets/images/weathers/" + fav.icon + ".png"} alt="" />
+                                    <img src={`/weathers/${fav.icon}.png`} alt="" />
                                 </div>)}
                 </div>
             </div>

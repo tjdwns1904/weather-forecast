@@ -360,7 +360,7 @@ li {
 .loading-spinner {
     width: 80px;
     height: 80px;
-    content: url('./assets/images/weather-app.png');
+    content: url('/weather-app.png');
     animation: spinner 1s linear infinite;
     animation-direction: alternate;
 }
