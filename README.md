@@ -1,7 +1,7 @@
 <div align="center">
 
 <!-- logo -->
-### SKYCAST <img src="https://github.com/tjdwns1904/weather-forecast/blob/main/src/assets/images/weather-app.png" width="30"/>
+### SKYCAST <img src="https://github.com/tjdwns1904/weather-forecast/blob/main/public/weather-app.png" width="30"/>
 
 [<img src="https://img.shields.io/badge/프로젝트 기간-2023.06.01~2023.08.30 & 2025.02.01~2025.02.24-blue?style=flat&logo=&logoColor=white" />]()
 
