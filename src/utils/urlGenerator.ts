@@ -1,4 +1,4 @@
-const key = import.meta.env.VITE_API_KEY;
+const key = import.meta.env.VITE_API_KEY || process.env.API_KEY;
 
 export const generateForecastURL = (query: {
     cityID: string,
