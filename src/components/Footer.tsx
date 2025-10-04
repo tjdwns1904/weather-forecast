@@ -1,7 +1,7 @@
 const FB_LINK = "https://www.facebook.com/profile.php?id=100008141106316";
 const INSTA_LINK = "https://www.instagram.com/tjdwns99/";
 const mailto = "mailto:seongjoonhong99@gmail.com?body=Hello!"
-function Footer() {
+export default function Footer() {
     return (
         <div className="footer-container">
             <div className="contact-container">
@@ -14,5 +14,3 @@ function Footer() {
         </div>
     )
 }
-
-export default Footer;
