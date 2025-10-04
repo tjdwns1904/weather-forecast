@@ -1,19 +1,15 @@
-import Home from './pages/Home';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Weather from './pages/Weather';
+import RootLayout from './layout/RootLayout';
 import { FavoritesProvider } from './lib/FavoriteContextProvider';
+import RouteProvider from './lib/routes';
 
 function App() {
 
   return (
     <div className="App">
       <FavoritesProvider>
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Home />} />
-            <Route path='/weather' element={<Weather />} />
-          </Routes>
-        </BrowserRouter>
+        <RootLayout>
+          <RouteProvider />
+        </RootLayout>
       </FavoritesProvider>
     </div>
   )
