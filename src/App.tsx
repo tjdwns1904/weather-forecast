@@ -1,7 +1,7 @@
 import Home from './pages/Home';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Weather from './pages/Weather';
-import { FavoritesProvider } from './context/FavoritesContext';
+import { FavoritesProvider } from './lib/FavoriteContextProvider';
 
 function App() {
 
