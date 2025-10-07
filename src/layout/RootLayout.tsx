@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="background">
+    <div className="flex flex-col justify-between min-h-screen h-full px-48 background">
       <Header />
       {children}
       <Footer />
