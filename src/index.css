@@ -25,18 +25,14 @@ body {
 
 .brand {
   content: url("/weather-app.png");
-  width: 60px;
-  height: 65px;
-  margin: 3rem 0;
 }
 
-input.form-control {
+input {
   margin: 2rem 0;
   border-radius: 40px;
-  padding: 10px 15px 10px 60px;
+  padding: 14px 15px 10px 60px;
   border: none;
   display: block;
-  width: 35%;
   font-size: 1rem;
   background: rgba(38, 36, 36, 0.7) url("./assets/images/search.png") no-repeat 20px center;
 
@@ -51,11 +47,6 @@ input.form-control {
     border-color: rgb(132, 132, 132);
     background-color: rgba(38, 36, 36, 0.7);
   }
-}
-
-h1 {
-  margin: 3rem 0 2rem 0;
-  font-size: 3rem;
 }
 
 .btn-byLocation {
@@ -73,34 +64,6 @@ h1 {
   }
 }
 
-.favorites {
-  background: rgba(38, 36, 36, 0.7);
-}
-
-.footer-container {
-  padding: 2rem 0;
-  text-align: center;
-}
-
-.footer-container p {
-  display: flex;
-  justify-content: center;
-  margin: 3rem 0 1rem 0;
-  font-size: 1rem;
-  color: white;
-}
-
-.contact-container {
-  display: flex;
-  justify-content: center;
-  margin: 1.5rem 0 3rem 0;
-}
-
-.icon {
-  margin-right: 10px;
-  cursor: pointer;
-}
-
 .fb {
   content: url("./assets/images/facebook.png");
 }
@@ -113,32 +76,8 @@ h1 {
   content: url('./assets/images/mail.png');
 }
 
-.line {
-  border: 1px solid rgb(0, 0, 0, 0.4);
-}
-
-.empty-list {
-  text-align: center;
-  color: #fff;
-  margin-top: 3rem;
-  margin-bottom: 8rem;
-}
-
-.empty-list h1 {
-  font-size: 2.5rem;
-  margin-top: 1rem;
-}
-
-.empty-list h2 {
-  font-size: 1.5rem;
-  margin-top: -1rem;
-  opacity: 0.6;
-}
-
 .fav-icon {
   content: url('./assets/images/favorite.png');
-  margin: 0 auto;
-  opacity: 0.6;
 }
 
 .container {
@@ -168,37 +107,10 @@ h1 {
   }
 }
 
-.location-container p {
-  vertical-align: middle;
-  text-align: center;
-}
-
-.location-container span {
-  font-size: 1.5rem;
-  font-weight: bold;
-}
-
-.weather-container {
-  display: flex;
-  flex-wrap: nowrap;
-  overflow-x: scroll;
-}
-
-ul {
-  list-style-type: none;
-  text-align: center;
-  padding: 0 1.5rem;
-}
-
-li {
-  margin: 10px 0;
-}
-
 .white-line {
   border: 1px solid rgb(255, 255, 255, 0.4);
   margin: 20px 0;
 }
-
 
 ::-webkit-scrollbar {
   width: 10px;
@@ -227,7 +139,7 @@ li {
     border-bottom: 5px solid #e6e4e4ba;
     width: 12px;
     height: 12px;
-    transform: rotate(135deg) translate(0, -20px);
+    transform: rotate(135deg) translate(0, -10px);
     position: absolute;
   }
 
@@ -243,7 +155,7 @@ li {
     font-size: 10px;
     color: black;
     padding: 2px;
-    transform: translate(30px, -20px);
+    transform: translate(20px, -50px);
     transition: 0.2s ease-in-out;
     opacity: 0;
   }
@@ -259,29 +171,8 @@ li {
   opacity: 1;
 }
 
-.breadcrumb p {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #e6e4e4ba;
-  padding-left: 2rem;
-}
-
-.container h1 {
-  margin-top: -1rem;
-}
-
-.v-line {
-  border-left: 2px solid rgb(255, 255, 255, 0.4);
-}
-
 .heading div {
   content: url('./assets/images/outline-star.png');
-  opacity: 0.6;
-  cursor: pointer;
-
-  &:hover {
-    opacity: 1;
-  }
 }
 
 .heading .star {
@@ -309,39 +200,4 @@ li {
   content: url('/weather-app.png');
   animation: spinner 1s linear infinite;
   animation-direction: alternate;
-}
-
-.detail-container {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-@media (max-width: 1024px) {
-  .wind-container {
-    width: 100%;
-  }
-
-  .weather-detail {
-    margin-bottom: 30px;
-  }
-}
-
-@media (max-width: 767px) {
-  .background {
-    padding: 0 2rem;
-  }
-
-  input.form-control {
-    width: 100%;
-  }
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  .background {
-    padding: 0 6rem;
-  }
-
-  input.form-control {
-    width: 45%;
-  }
 }

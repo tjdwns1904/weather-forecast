@@ -8,7 +8,7 @@ export default function NotFound(props: {
     <>
       <div className="fixed left-0 w-full h-full bg-black/30" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 z-1 p-4">
-        <div className="container px-4 py-3">
+        <div className="container w-full max-w-full px-4 py-3">
           <p className="font-bold text-2xl mb-0">City Not Found</p>
           <hr />
           <p className="text-xl mb-0">A city named "{props.city}" not found!</p>

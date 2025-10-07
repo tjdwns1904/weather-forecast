@@ -1,5 +1,4 @@
 import { ChangeEvent, useState } from "react";
-import { Form } from "react-bootstrap";
 import { createSearchParams, useNavigate } from 'react-router-dom';
 
 export default function SearchForm() {
@@ -13,7 +12,7 @@ export default function SearchForm() {
 
   return (
     <>
-      <Form onSubmit={e => {
+      <form onSubmit={e => {
         e.preventDefault();
         navigate({
           pathname: "/weather", search: createSearchParams({
@@ -21,10 +20,12 @@ export default function SearchForm() {
           }).toString()
         });
       }}>
-        <Form.Group>
-          <Form.Control placeholder="Search..." onChange={handleChange} />
-        </Form.Group>
-      </Form>
+        <input
+          placeholder="Search..."
+          onChange={handleChange}
+          className="w-full md:w-1/2 lg:w-1/3"
+        />
+      </form>
     </>
   )
 }

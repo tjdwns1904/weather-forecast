@@ -4,15 +4,15 @@ import Compass from "./Compass";
 export default function WeatherDetails({ weather }: { weather: WeatherInfo }) {
   return (
     <div className="flex gap-2">
-      <div className="flex flex-col container">
+      <div className="flex flex-col container w-full max-w-full">
         <div className="flex-1">
           <h2>Wind</h2>
           <div className="white-line"></div>
         </div>
         <Compass speed={weather.wind.speed} deg={weather.wind.angle} />
       </div>
-      <div className="container">
-        <h2>Additional Conditions</h2>
+      <div className="container w-full max-w-full">
+        <h2 className="font-bold">Additional Conditions</h2>
         <div className="white-line"></div>
         <div className="my-5">
           <h3 className="text-tertiary fs-4">Weather</h3>
