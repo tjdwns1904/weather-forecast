@@ -17,3 +17,8 @@ export interface PlacePayload {
   name: string;
   place_id: string;
 }
+
+export interface City {
+  name: string;
+  place_id: string;
+}

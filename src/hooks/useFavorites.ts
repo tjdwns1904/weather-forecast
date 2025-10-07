@@ -1,19 +1,21 @@
 import { useCallback, useContext } from "react";
 import { FavoritesContext } from "../context/FavoritesContext";
+import { City } from "@/types/common";
 
 export function useFavorites() {
   const { favorites, setFavorites } = useContext(FavoritesContext);
   const addFavorite = useCallback(
-    (cName: string) => {
-      cName = cName.toLowerCase();
+    (city: City) => {
+      let { name } = city;
+      name = name.toLowerCase();
       if (favorites.length > 4) {
         alert("You can have 4 favorites maximum");
         return;
       }
 
-      const exists = favorites.includes(cName);
+      const exists = favorites.some((c) => c.name === name);
       if (!exists) {
-        setFavorites([...favorites, cName]);
+        setFavorites([...favorites, {...city, name: city.name.toLowerCase()}]);
       }
     },
     [favorites, setFavorites]
@@ -22,7 +24,7 @@ export function useFavorites() {
   const removeFavorite = useCallback(
     (cName: string) => {
       cName = cName.toLowerCase();
-      setFavorites(favorites.filter((city) => cName !== city));
+      setFavorites(favorites.filter((city) => city.name !== cName));
     },
     [setFavorites, favorites]
   );
