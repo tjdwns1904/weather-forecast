@@ -16,7 +16,7 @@ export default function WeatherFavorites() {
       try {
         setIsFavLoading(true);
         const promises = favorites.map(async (fav) => {
-          const url = generateForecastURL({ cityID: fav, unit: "current" });
+          const url = generateForecastURL({ cityID: fav.place_id, unit: "current" });
           const data = await weatherApi.getWeather(url, "current");
           return { ...data[0], icon: data[0].icon_num };
         });
@@ -34,7 +34,7 @@ export default function WeatherFavorites() {
       getFavorites();
     }
   }, [favorites]);
-  
+
   return (
     <>
       <h1 className="text-4xl font-semibold mt-12 mb-8">Your Favorites ({favorites.length}/4)</h1>
@@ -49,16 +49,17 @@ export default function WeatherFavorites() {
           <div className="loading-spinner mx-auto my-5" />
           : weatherOfFavorites.slice(0, favorites.length).map((fav, idx) =>
             fav &&
-            <div key={idx} className="location-container" onClick={() => {
-              const cityName = favorites[idx];
+            <div key={favorites[idx].place_id} className="location-container" onClick={() => {
+              const { name, place_id } = favorites[idx];
               navigate({
                 pathname: "/weather", search: createSearchParams({
-                  city: cityName
+                  city: name,
+                  place_id: place_id,
                 }).toString()
               });
             }}>
               <h1 className="text-4xl font-semibold m-0">{Math.floor(fav.temperature)}&deg;</h1>
-              <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
+              <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{favorites[idx].name[0].toUpperCase() + favorites[idx].name.slice(1)}</span><br />{fav.summary}</p>
               <img src={`/weathers/${fav.icon}.png`} alt="" />
             </div>)}
     </>

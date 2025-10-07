@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { WeatherInfo } from "@/types/common";
+import { City, WeatherInfo } from "@/types/common";
 import NotFound from "../components/Weather/NotFoundPage";
 import { generateForecastURL, generatePlaceURLByCName } from "@/utils/urlGenerator";
 import { weatherApi } from "@/api/weatherApi";
@@ -12,7 +12,7 @@ import { twJoin } from "tailwind-merge";
 
 export default function Weather() {
   const navigate = useNavigate();
-  const [city, setCity] = useState<string>("");
+  const [city, setCity] = useState<City>({ name: "", place_id: "" });
   const [searchParams] = useSearchParams();
   const { favorites, addFavorite, removeFavorite } = useFavorites();
   const [isLoading, setIsLoading] = useState(true);
@@ -28,7 +28,7 @@ export default function Weather() {
     }
   }
   const removeFav = () => {
-    removeFavorite(city);
+    removeFavorite(city.name);
     setIsStarred(false);
   }
 
@@ -46,7 +46,8 @@ export default function Weather() {
     const getPlaceInfo = async (url: string) => {
       try {
         const data = await weatherApi.getPlaceID(url);
-        setCity(data.name);
+        const { name, place_id } = data;
+        setCity({ name, place_id });
         const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
         getWeatherInfos(forecastUrl);
       } catch (err) {
@@ -55,16 +56,18 @@ export default function Weather() {
       }
     }
     const cityName = searchParams.get("city");
-    cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
+    cityName && setCity(prev => ({ ...prev, name: cityName.charAt(0).toUpperCase() + cityName.slice(1) }));
     if (searchParams.get("place_id")) {
       const place_id = searchParams.get("place_id");
       const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
+      setCity(prev => ({...prev, place_id: place_id! }));
       url && getWeatherInfos(url);
     } else {
       const url = cityName && generatePlaceURLByCName({ cName: cityName });
       url && getPlaceInfo(url);
     }
-    if (cityName && favorites.includes(cityName.toLowerCase())) {
+    console.log(favorites, cityName?.toLowerCase());
+    if (cityName && favorites.some((c) => c.name === cityName.toLowerCase())) {
       setIsStarred(true);
     }
   }, [favorites, searchParams]);
@@ -77,7 +80,7 @@ export default function Weather() {
 
         <div className="heading">
           <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
-            {city}
+            {city.name}
             <div
               className={
                 twJoin('opacity-60 cursor-pointer hover:opacity-100', isStarred ? 'filled-star' : 'star')
@@ -101,7 +104,7 @@ export default function Weather() {
   } else {
     return (
       <>
-        {!exists && <NotFound city={city} />}
+        {!exists && <NotFound city={city.name} />}
         <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner"></div></div>
       </>
     )
