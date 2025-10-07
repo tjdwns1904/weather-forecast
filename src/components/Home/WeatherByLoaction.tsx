@@ -2,7 +2,6 @@ import { weatherApi } from "@/api/weatherApi";
 import { PlacePayload, WeatherInfo } from "@/types/common";
 import { generateForecastURL, generatePlaceURLByPosition } from "@/utils/urlGenerator";
 import { useCallback, useEffect, useState } from "react";
-import { Button } from "react-bootstrap";
 import { createSearchParams, useNavigate } from "react-router-dom";
 
 export default function WeatherByLocation() {
@@ -57,7 +56,7 @@ export default function WeatherByLocation() {
   }, [getLocation]);
   return (
     <div className="byLocation-container">
-      <h1 className="byLocation">Your Location</h1>
+      <h1 className="byLocation text-4xl font-semibold mt-12 mb-8">Your Location</h1>
       {isClicked ?
         isLocationLoading ?
           <div className="loading-spinner mx-auto my-5" />
@@ -71,16 +70,16 @@ export default function WeatherByLocation() {
               }).toString()
             });
           }}>
-            <h1 className="m-0">{Math.floor(weather.temperature)}&deg;</h1>
-            <p className="mb-0"><span>{place.name}</span><br />{weather.summary}</p>
+            <h1 className="text-4xl font-semibold m-0">{Math.floor(weather.temperature)}&deg;</h1>
+            <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{place.name}</span><br />{weather.summary}</p>
             <img src={`/weathers/${weather.icon}.png`} alt="" />
           </div>
         :
-        <Button className="btn-byLocation" onClick={() => {
+        <button className="btn-byLocation" onClick={() => {
           getLocation();
         }}>
           Weather by your location
-        </Button>
+        </button>
       }
     </div>
   )

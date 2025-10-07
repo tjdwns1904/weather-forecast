@@ -37,12 +37,12 @@ export default function WeatherFavorites() {
   
   return (
     <>
-      <h1>Your Favorites ({favorites.length}/4)</h1>
+      <h1 className="text-4xl font-semibold mt-12 mb-8">Your Favorites ({favorites.length}/4)</h1>
       {favorites.length === 0 ?
-        <div className="empty-list">
-          <div className="fav-icon"></div>
-          <h1>No Favorites Yet!</h1>
-          <h2>Locations you mark as favorite will be listed here</h2>
+        <div className="text-center text-white my-12">
+          <div className="fav-icon mx-auto opacity-60"></div>
+          <h1 className="text-4xl font-semibold mt-12 mb-8">No Favorites Yet!</h1>
+          <h2 className="text-2xl font-semibold opacity-60 -mt-8">Locations you mark as favorite will be listed here</h2>
         </div>
         :
         isFavLoading ?
@@ -57,7 +57,7 @@ export default function WeatherFavorites() {
                 }).toString()
               });
             }}>
-              <h1 className="m-0">{Math.floor(fav.temperature)}&deg;</h1>
+              <h1 className="text-4xl font-semibold m-0">{Math.floor(fav.temperature)}&deg;</h1>
               <p className="mb-0"><span>{favorites[idx][0].toUpperCase() + favorites[idx].slice(1)}</span><br />{fav.summary}</p>
               <img src={`/weathers/${fav.icon}.png`} alt="" />
             </div>)}

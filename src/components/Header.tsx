@@ -1,9 +1,7 @@
-import { Navbar } from 'react-bootstrap';
-
 export default function Header() {
   return (
-    <Navbar>
-      <Navbar.Brand href="/" className="brand"></Navbar.Brand>
-    </Navbar>
+    <nav>
+      <a href="/" className="brand w-[65px] aspect-square my-12"></a>
+    </nav>
   )
 }

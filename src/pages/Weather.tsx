@@ -8,6 +8,7 @@ import { weatherApi } from "@/api/weatherApi";
 import { useFavorites } from "@/hooks/useFavorites";
 import HourlyWeather from "@/components/Weather/HourlyWeather";
 import WeatherDetails from "@/components/Weather/WeatherDetails";
+import { twJoin } from "tailwind-merge";
 
 export default function Weather() {
   const navigate = useNavigate();
@@ -71,15 +72,19 @@ export default function Weather() {
     return (
       <>
         <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
-          <p>Home</p>
+          <p className="text-2xl font-semibold text-[#e6e4e4ba] pl-6 leading-6">Home</p>
         </div>
 
         <div className="heading">
-          <h1 className="flex justify-between items-center">
+          <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
             {city}
-            <div className={isStarred ? 'filled-star' : 'star'} onClick={() => {
-              isStarred ? removeFav() : addFav();
-            }}>
+            <div
+              className={
+                twJoin('opacity-60 cursor-pointer hover:opacity-100', isStarred ? 'filled-star' : 'star')
+              }
+              onClick={() => {
+                isStarred ? removeFav() : addFav();
+              }}>
             </div>
           </h1>
         </div>
