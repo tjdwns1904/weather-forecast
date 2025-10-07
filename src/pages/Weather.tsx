@@ -10,98 +10,98 @@ import HourlyWeather from "@/components/HourlyWeather";
 import WeatherDetails from "@/components/WeatherDetails";
 
 export default function Weather() {
-    const navigate = useNavigate();
-    const [city, setCity] = useState<string>("");
-    const [searchParams] = useSearchParams();
-    const { favorites, addFavorite, removeFavorite } = useFavorites();
-    const [isLoading, setIsLoading] = useState(true);
-    const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
-    const [isStarred, setIsStarred] = useState(false);
-    const [exists, setExists] = useState(true);
-    const addFav = () => {
-        if (favorites.length < 4) {
-            addFavorite(city);
-            setIsStarred(true);
-        } else {
-            alert("You can have 4 favorites maximum!");
-        }
-    }
-    const removeFav = () => {
-        removeFavorite(city);
-        setIsStarred(false);
-    }
-
-    const getWeatherInfos = async (url: string) => {
-        try {
-            const data = await weatherApi.getWeather(url, "hourly");
-            setWeathers(data);
-            setIsLoading(false);
-        } catch (err) {
-            console.log(err);
-            setExists(false);
-        }
-    }
-    useEffect(() => {
-        const getPlaceInfo = async (url: string) => {
-            try {
-                const data = await weatherApi.getPlaceID(url);
-                setCity(data.name);
-                const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
-                getWeatherInfos(forecastUrl);
-            } catch (err) {
-                console.log(err);
-                setExists(false);
-            }
-        }
-        const cityName = searchParams.get("city");
-        cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
-        if (searchParams.get("place_id")) {
-            const place_id = searchParams.get("place_id");
-            const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
-            url && getWeatherInfos(url);
-        } else {
-            const url = cityName && generatePlaceURLByCName({ cName: cityName });
-            if (cityName && favorites.includes(cityName.toLowerCase())) {
-                setIsStarred(true);
-            }
-            url && getPlaceInfo(url);
-        }
-    }, [favorites, searchParams]);
-    if (!isLoading) {
-        return (
-            <>
-                <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
-                    <p>Home</p>
-                </div>
-
-                <div className="heading">
-                    <h1 className="cityName">
-                        {city}
-                        <div className={isStarred ? 'filled-star' : 'star'} onClick={() => {
-                            isStarred ? removeFav() : addFav();
-                        }}>
-                        </div>
-                    </h1>
-                </div>
-
-                {weathers &&
-                    <>
-                        <HourlyWeather weathers={weathers} />
-                        <WeatherDetails weather={weathers[0]} />
-                    </>
-                }
-
-            </>
-        )
+  const navigate = useNavigate();
+  const [city, setCity] = useState<string>("");
+  const [searchParams] = useSearchParams();
+  const { favorites, addFavorite, removeFavorite } = useFavorites();
+  const [isLoading, setIsLoading] = useState(true);
+  const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
+  const [isStarred, setIsStarred] = useState(false);
+  const [exists, setExists] = useState(true);
+  const addFav = () => {
+    if (favorites.length < 4) {
+      addFavorite(city);
+      setIsStarred(true);
     } else {
-        return (
-            <>
-                {!exists && <NotFound city={city} />}
-                <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
-                    <div className="spinner-container"><div className="loading-spinner"></div></div>
-                </div>
-            </>
-        )
+      alert("You can have 4 favorites maximum!");
     }
+  }
+  const removeFav = () => {
+    removeFavorite(city);
+    setIsStarred(false);
+  }
+
+  const getWeatherInfos = async (url: string) => {
+    try {
+      const data = await weatherApi.getWeather(url, "hourly");
+      setWeathers(data);
+      setIsLoading(false);
+    } catch (err) {
+      console.log(err);
+      setExists(false);
+    }
+  }
+  useEffect(() => {
+    const getPlaceInfo = async (url: string) => {
+      try {
+        const data = await weatherApi.getPlaceID(url);
+        setCity(data.name);
+        const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
+        getWeatherInfos(forecastUrl);
+      } catch (err) {
+        console.log(err);
+        setExists(false);
+      }
+    }
+    const cityName = searchParams.get("city");
+    cityName && setCity(cityName?.charAt(0).toUpperCase() + cityName?.slice(1));
+    if (searchParams.get("place_id")) {
+      const place_id = searchParams.get("place_id");
+      const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
+      url && getWeatherInfos(url);
+    } else {
+      const url = cityName && generatePlaceURLByCName({ cName: cityName });
+      url && getPlaceInfo(url);
+    }
+    if (cityName && favorites.includes(cityName.toLowerCase())) {
+      setIsStarred(true);
+    }
+  }, [favorites, searchParams]);
+  if (!isLoading) {
+    return (
+      <>
+        <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
+          <p>Home</p>
+        </div>
+
+        <div className="heading">
+          <h1 className="cityName">
+            {city}
+            <div className={isStarred ? 'filled-star' : 'star'} onClick={() => {
+              isStarred ? removeFav() : addFav();
+            }}>
+            </div>
+          </h1>
+        </div>
+
+        {weathers &&
+          <>
+            <HourlyWeather weathers={weathers} />
+            <WeatherDetails weather={weathers[0]} />
+          </>
+        }
+
+      </>
+    )
+  } else {
+    return (
+      <>
+        {!exists && <NotFound city={city} />}
+        <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
+          <div className="spinner-container"><div className="loading-spinner"></div></div>
+        </div>
+      </>
+    )
+  }
 
 }
