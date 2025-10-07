@@ -2,12 +2,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { WeatherInfo } from "@/types/common";
-import NotFound from "../components/NotFoundPage";
+import NotFound from "../components/Weather/NotFoundPage";
 import { generateForecastURL, generatePlaceURLByCName } from "@/utils/urlGenerator";
 import { weatherApi } from "@/api/weatherApi";
 import { useFavorites } from "@/hooks/useFavorites";
-import HourlyWeather from "@/components/HourlyWeather";
-import WeatherDetails from "@/components/WeatherDetails";
+import HourlyWeather from "@/components/Weather/HourlyWeather";
+import WeatherDetails from "@/components/Weather/WeatherDetails";
 
 export default function Weather() {
   const navigate = useNavigate();
@@ -75,7 +75,7 @@ export default function Weather() {
         </div>
 
         <div className="heading">
-          <h1 className="cityName">
+          <h1 className="flex justify-between items-center">
             {city}
             <div className={isStarred ? 'filled-star' : 'star'} onClick={() => {
               isStarred ? removeFav() : addFav();
@@ -97,9 +97,7 @@ export default function Weather() {
     return (
       <>
         {!exists && <NotFound city={city} />}
-        <div className="loading-background" style={{ filter: exists ? "none" : 'blur(2px)' }}>
-          <div className="spinner-container"><div className="loading-spinner"></div></div>
-        </div>
+        <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner"></div></div>
       </>
     )
   }

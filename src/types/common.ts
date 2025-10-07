@@ -4,6 +4,7 @@ export interface WeatherInfo {
   temperature: number;
   wind: {
     speed: number;
+    angle: number;
   };
   summary: string;
   cloud_cover: {
