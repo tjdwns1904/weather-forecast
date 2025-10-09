@@ -2,8 +2,8 @@ const key = import.meta.env.VITE_API_KEY || process.env.API_KEY;
 
 export const generateForecastURL = (query: {
   cityID: string;
-  unit: string;
-}) => {
+  unit: 'hourly' | 'current';
+}): string => {
   const queryURL = "point?place_id=" + query.cityID;
   const timeUnit =
     query.unit === "hourly"
@@ -13,7 +13,7 @@ export const generateForecastURL = (query: {
   return url;
 };
 
-export const generatePlaceURLByCName = ({ cName }: { cName: string }) => {
+export const generatePlaceURLByCName = ({ cName }: { cName: string }): string => {
   const queryURL = "find_places?" + "text=" + cName + "&key=";
   const url = queryURL + key;
   return url;
@@ -25,7 +25,7 @@ export const generatePlaceURLByPosition = ({
 }: {
   lat: number;
   lon: number;
-}) => {
+}): string => {
   const queryURL = "nearest_place?lat=" + lat + "&lon=" + lon + "&key=";
   const url = queryURL + key;
   return url;

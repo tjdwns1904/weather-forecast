@@ -4,7 +4,7 @@ import { axiosInstance } from "./axios";
 export const weatherApi = {
   getWeather: async (url: string, timeUnit: string): Promise<WeatherInfo[]> => {
     const res = await axiosInstance.get(url);
-    return timeUnit === "hourly" ? res.data.hourly.data : [res.data.current];
+    return timeUnit === "hourly" ? res.data.hourly.data : [{...res.data.current, icon: res.data.current.icon_num}];
   },
 
   getPlaceID: async (url: string): Promise<PlacePayload> => {
