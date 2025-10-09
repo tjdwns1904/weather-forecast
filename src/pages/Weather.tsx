@@ -26,7 +26,6 @@ export default function Weather() {
     enabled: !!(city?.name && city?.place_id)
   });
   const [isStarred, setIsStarred] = useState(cityName ? favorites.some((c) => c.name === cityName.toLowerCase()) : false);
-  const [exists, setExists] = useState(true);
 
   const addFav = () => {
     if (city && favorites.length < 4) {
@@ -52,8 +51,7 @@ export default function Weather() {
         return data;
       }
     } catch (err) {
-      console.log(err);
-      setExists(false);
+      console.error(err);
     }
   }
 
@@ -64,46 +62,41 @@ export default function Weather() {
       const { name, place_id } = data;
       return { name, place_id };
     } catch (err) {
-      console.log(err);
-      setExists(false);
+      console.error(err);
     }
   }
 
   if (!isCityLoading && !isForecastLoading) {
     return (
-      <>
-        <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
-          <p className="text-2xl font-semibold text-[#e6e4e4ba] pl-6 leading-6">Home</p>
-        </div>
-
-        <div className="heading">
-          <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
-            {city && city.name}
-            <div
-              className={
-                twJoin('opacity-60 cursor-pointer hover:opacity-100', isStarred ? 'filled-star' : 'star')
-              }
-              onClick={() => {
-                isStarred ? removeFav() : addFav();
-              }}>
-            </div>
-          </h1>
-        </div>
-
-        {
-          weathers &&
+      (weathers && city) ?
+        <>
+          <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
+            <p className="text-2xl font-semibold text-[#e6e4e4ba] pl-6 leading-6">Home</p>
+          </div>
+          <div className="heading">
+            <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
+              {city.name}
+              <div
+                className={
+                  twJoin('opacity-60 cursor-pointer hover:opacity-100', isStarred ? 'filled-star' : 'star')
+                }
+                onClick={() => {
+                  isStarred ? removeFav() : addFav();
+                }}>
+              </div>
+            </h1>
+          </div>
           <>
             <HourlyWeather weathers={weathers} />
             <WeatherDetails weather={weathers[0]} />
           </>
-        }
-
-      </>
+        </>
+        :
+        <NotFound city={city?.name ?? cityName} />
     )
   } else {
     return (
       <>
-        {!exists && <NotFound city={city?.name ?? cityName} />}
         <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner"></div></div>
       </>
     )
