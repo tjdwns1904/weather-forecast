@@ -1,39 +1,22 @@
-import { useEffect, useState } from "react";
 import { useFavorites } from "@/hooks/useFavorites";
-import { WeatherInfo } from "@/types/common";
 import { generateForecastURL } from "@/utils/urlGenerator";
 import { weatherApi } from "@/api/weatherApi";
 import { createSearchParams, useNavigate } from 'react-router-dom';
+import { useQueries } from "@tanstack/react-query";
 
 export default function WeatherFavorites() {
   const navigate = useNavigate();
   const { favorites } = useFavorites();
-  const [weatherOfFavorites, setWeatherOfFavorites] = useState<WeatherInfo[]>([]);
-  const [isFavLoading, setIsFavLoading] = useState(false);
-
-  useEffect(() => {
-    const getFavorites = async () => {
-      try {
-        setIsFavLoading(true);
-        const promises = favorites.map(async (fav) => {
-          const url = generateForecastURL({ cityID: fav.place_id, unit: "current" });
-          const data = await weatherApi.getWeather(url, "current");
-          return { ...data[0], icon: data[0].icon_num };
-        });
-        const results = await Promise.all(promises);
-        setWeatherOfFavorites(results);
+  const weatherQueries = useQueries({
+    queries: favorites.map(({ name, place_id }) => ({
+      queryKey: ['weather', name],
+      queryFn: async () => {
+        const url = generateForecastURL({ cityID: place_id, unit: "current" });
+        const data = await weatherApi.getWeather(url, "current");
+        return data[0];
       }
-      catch (err) {
-        console.log(err);
-      }
-      finally {
-        setIsFavLoading(false);
-      }
-    }
-    if (favorites.length > 0) {
-      getFavorites();
-    }
-  }, [favorites]);
+    })),
+  });
 
   return (
     <>
@@ -45,23 +28,28 @@ export default function WeatherFavorites() {
           <h2 className="text-2xl font-semibold opacity-60 -mt-8">Locations you mark as favorite will be listed here</h2>
         </div>
         :
-        isFavLoading ?
-          <div className="loading-spinner mx-auto my-5" />
-          : weatherOfFavorites.slice(0, favorites.length).map((fav, idx) =>
-            fav &&
-            <div key={favorites[idx].place_id} className="location-container" onClick={() => {
-              const { name, place_id } = favorites[idx];
-              navigate({
-                pathname: "/weather", search: createSearchParams({
-                  city: name,
-                  place_id: place_id,
-                }).toString()
-              });
-            }}>
-              <h1 className="text-4xl font-semibold m-0">{Math.floor(fav.temperature)}&deg;</h1>
-              <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{favorites[idx].name[0].toUpperCase() + favorites[idx].name.slice(1)}</span><br />{fav.summary}</p>
-              <img src={`/weathers/${fav.icon}.png`} alt="" />
-            </div>)}
+        weatherQueries.map((weather, i) => {
+          if (weather.isLoading) return <div key={favorites[i].place_id} className="loading-spinner mx-auto my-5" />
+          else if (weather.data) {
+            return (
+              <div key={favorites[i].place_id} className="location-container" onClick={() => {
+                const { name, place_id } = favorites[i];
+                navigate({
+                  pathname: "/weather", search: createSearchParams({
+                    city: name,
+                    place_id: place_id,
+                  }).toString()
+                });
+              }}>
+                <h1 className="text-4xl font-semibold m-0">{Math.floor(weather.data.temperature)}&deg;</h1>
+                <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{favorites[i].name[0].toUpperCase() + favorites[i].name.slice(1)}</span><br />{weather.data.summary}</p>
+                <img src={`/weathers/${weather.data.icon}.png`} alt="" />
+              </div>
+            )
+          }
+          return <div key={favorites[i].place_id}></div>
+        })
+      }
     </>
   )
 }

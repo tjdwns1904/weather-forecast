@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { City, WeatherInfo } from "@/types/common";
 import NotFound from "../components/Weather/NotFoundPage";
 import { generateForecastURL, generatePlaceURLByCName } from "@/utils/urlGenerator";
 import { weatherApi } from "@/api/weatherApi";
@@ -9,69 +8,68 @@ import { useFavorites } from "@/hooks/useFavorites";
 import HourlyWeather from "@/components/Weather/HourlyWeather";
 import WeatherDetails from "@/components/Weather/WeatherDetails";
 import { twJoin } from "tailwind-merge";
+import { useQuery } from "@tanstack/react-query";
 
 export default function Weather() {
   const navigate = useNavigate();
-  const [city, setCity] = useState<City>({ name: "", place_id: "" });
   const [searchParams] = useSearchParams();
+  const cityName = searchParams.get("city")!;
   const { favorites, addFavorite, removeFavorite } = useFavorites();
-  const [isLoading, setIsLoading] = useState(true);
-  const [weathers, setWeathers] = useState<WeatherInfo[]>([]);
-  const [isStarred, setIsStarred] = useState(false);
+  const { data: city, isLoading: isCityLoading } = useQuery({
+    queryKey: ['city', cityName.toLowerCase()],
+    queryFn: () => getPlaceInfo(),
+    enabled: !!cityName
+  });
+  const { data: weathers, isLoading: isForecastLoading } = useQuery({
+    queryKey: ['weather-forecast', city?.place_id],
+    queryFn: () => getWeatherInfos(),
+    enabled: !!(city?.name && city?.place_id)
+  });
+  const [isStarred, setIsStarred] = useState(cityName ? favorites.some((c) => c.name === cityName.toLowerCase()) : false);
   const [exists, setExists] = useState(true);
+
   const addFav = () => {
-    if (favorites.length < 4) {
+    if (city && favorites.length < 4) {
       addFavorite(city);
       setIsStarred(true);
     } else {
       alert("You can have 4 favorites maximum!");
     }
   }
+
   const removeFav = () => {
-    removeFavorite(city.name);
-    setIsStarred(false);
+    if (city) {
+      removeFavorite(city.name);
+      setIsStarred(false);
+    }
   }
 
-  const getWeatherInfos = async (url: string) => {
+  const getWeatherInfos = async () => {
     try {
-      const data = await weatherApi.getWeather(url, "hourly");
-      setWeathers(data);
-      setIsLoading(false);
+      if (city) {
+        const url = generateForecastURL({ cityID: city.place_id, unit: 'hourly' })
+        const data = await weatherApi.getWeather(url, "hourly");
+        return data;
+      }
     } catch (err) {
       console.log(err);
       setExists(false);
     }
   }
-  useEffect(() => {
-    const getPlaceInfo = async (url: string) => {
-      try {
-        const data = await weatherApi.getPlaceID(url);
-        const { name, place_id } = data;
-        setCity({ name, place_id });
-        const forecastUrl = generateForecastURL({ cityID: data.place_id, unit: "hourly" });
-        getWeatherInfos(forecastUrl);
-      } catch (err) {
-        console.log(err);
-        setExists(false);
-      }
+
+  const getPlaceInfo = async () => {
+    try {
+      const url = generatePlaceURLByCName({ cName: cityName! });
+      const data = await weatherApi.getPlaceID(url);
+      const { name, place_id } = data;
+      return { name, place_id };
+    } catch (err) {
+      console.log(err);
+      setExists(false);
     }
-    const cityName = searchParams.get("city");
-    cityName && setCity(prev => ({ ...prev, name: cityName.charAt(0).toUpperCase() + cityName.slice(1) }));
-    if (searchParams.get("place_id")) {
-      const place_id = searchParams.get("place_id");
-      const url = place_id && generateForecastURL({ cityID: place_id, unit: "hourly" });
-      setCity(prev => ({...prev, place_id: place_id! }));
-      url && getWeatherInfos(url);
-    } else {
-      const url = cityName && generatePlaceURLByCName({ cName: cityName });
-      url && getPlaceInfo(url);
-    }
-    console.log(favorites, cityName?.toLowerCase());
-    if (cityName && favorites.some((c) => c.name === cityName.toLowerCase())) {
-      setIsStarred(true);
-    }
-  }, [favorites, searchParams]);
-  if (!isLoading) {
+  }
+
+  if (!isCityLoading && !isForecastLoading) {
     return (
       <>
         <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
@@ -80,7 +78,7 @@ export default function Weather() {
 
         <div className="heading">
           <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
-            {city.name}
+            {city && city.name}
             <div
               className={
                 twJoin('opacity-60 cursor-pointer hover:opacity-100', isStarred ? 'filled-star' : 'star')
@@ -92,7 +90,8 @@ export default function Weather() {
           </h1>
         </div>
 
-        {weathers &&
+        {
+          weathers &&
           <>
             <HourlyWeather weathers={weathers} />
             <WeatherDetails weather={weathers[0]} />
@@ -104,7 +103,7 @@ export default function Weather() {
   } else {
     return (
       <>
-        {!exists && <NotFound city={city.name} />}
+        {!exists && <NotFound city={city?.name ?? cityName} />}
         <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner"></div></div>
       </>
     )
