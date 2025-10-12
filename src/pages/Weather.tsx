@@ -9,6 +9,8 @@ import HourlyWeather from "@/components/Weather/HourlyWeather";
 import WeatherDetails from "@/components/Weather/WeatherDetails";
 import { twJoin } from "tailwind-merge";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { ApiError } from "@/types/common";
 
 export default function Weather() {
   const navigate = useNavigate();
@@ -23,9 +25,10 @@ export default function Weather() {
   const { data: weathers, isLoading: isForecastLoading } = useQuery({
     queryKey: ['weather-forecast', city?.place_id],
     queryFn: () => getWeatherInfos(),
-    enabled: !!(city?.name && city?.place_id)
+    enabled: !!city
   });
   const [isStarred, setIsStarred] = useState(cityName ? favorites.some((c) => c.name === cityName.toLowerCase()) : false);
+  const [error, setError] = useState<ApiError | null>(null);
 
   const addFav = () => {
     if (city && favorites.length < 4) {
@@ -51,7 +54,17 @@ export default function Weather() {
         return data;
       }
     } catch (err) {
-      console.error(err);
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 400) {
+          setError({title: 'Result Not Found', msg: `No forecast found for '${city?.name || cityName}'`});
+        } else if (err.response?.status === 500) {
+          setError({title: 'Server Error', msg: 'An error occurred\nPlease try again later'});
+        } else {
+          setError({title: 'Unknown Error', msg: 'An error occurred\nPlease try again later'});
+        }
+      } else {
+        setError({title: 'Network Error', msg: 'Check your network status and try again'});
+      }
     }
   }
 
@@ -62,13 +75,23 @@ export default function Weather() {
       const { name, place_id } = data;
       return { name, place_id };
     } catch (err) {
-      console.error(err);
+      if (axios.isAxiosError(err)) {
+        if (err.response?.status === 400) {
+          setError({title: 'City Not Found', msg: `No city named '${city?.name || cityName}'`});
+        } else if (err.response?.status === 500) {
+          setError({title: 'Server Error', msg: 'An error occurred\nPlease try again later'});
+        } else {
+          setError({title: 'Unknown Error', msg: 'An error occurred\nPlease try again later'});
+        }
+      } else {
+        setError({title: 'Network Error', msg: 'Check your network status and try again'});
+      }
     }
   }
 
   if (!isCityLoading && !isForecastLoading) {
     return (
-      (weathers && city) ?
+      (weathers && city && !error) ?
         <>
           <div className="breadcrumb" data-hover="Go back home" onClick={() => navigate('/')}>
             <p className="text-2xl font-semibold text-[#e6e4e4ba] pl-6 leading-6">Home</p>
@@ -92,7 +115,7 @@ export default function Weather() {
           </>
         </>
         :
-        <NotFound city={city?.name ?? cityName} />
+        <NotFound error={error!} />
     )
   } else {
     return (
