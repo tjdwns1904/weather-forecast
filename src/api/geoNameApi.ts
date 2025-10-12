@@ -1,7 +1,7 @@
 import { GeoName } from "@/types/common";
 import { axiosInstance } from "./axios";
 
-const USERNAME = import.meta.env.VITE_API_USERNAME || process.env.GEONAME_USERNAME;
+const USERNAME = import.meta.env.VITE_API_USERNAME || process.env.API_USERNAME;
 
 export const geoNameApi = {
   getGeoName: async (query: string): Promise<GeoName[]> => {
