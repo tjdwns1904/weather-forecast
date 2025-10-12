@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/geonames/:path*",
+      "destination": "https://secure.geonames.org/:path*"
+    }
+  ]
+}
