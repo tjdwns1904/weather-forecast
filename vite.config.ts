@@ -10,5 +10,14 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
     }
+  },
+  server: {
+    proxy: {
+      '/geonames': {
+        target: 'https://secure.geonames.org',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/geonames/, ''),
+      }
+    }
   }
 })  

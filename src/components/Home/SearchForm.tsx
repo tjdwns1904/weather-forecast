@@ -1,3 +1,4 @@
+import { geoNameApi } from "@/api/geoNameApi";
 import { ChangeEvent, useState } from "react";
 import { createSearchParams, useNavigate } from 'react-router-dom';
 
@@ -6,19 +7,33 @@ export default function SearchForm() {
   const [city, setCity] = useState("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const newCity = e.target.value;
-    setCity(newCity);
+    setCity(e.target.value);
+  }
+
+  const isEnglish = (str: string) => {
+    return /^[a-zA-Z\s]+$/.test(str);
+  }
+
+  const handleSearch = async () => {
+    let cityEn = city.trim();
+    if (!isEnglish(cityEn)) {
+      const geoName = await geoNameApi.getGeoName(city);
+      if (geoName.length > 0) {
+        cityEn = geoName[0].name;
+      }
+    }
+    navigate({
+      pathname: "/weather", search: createSearchParams({
+        city: cityEn
+      }).toString()
+    });
   }
 
   return (
     <>
       <form onSubmit={e => {
         e.preventDefault();
-        navigate({
-          pathname: "/weather", search: createSearchParams({
-            city: city
-          }).toString()
-        });
+        handleSearch();
       }}>
         <input
           placeholder="Search..."
