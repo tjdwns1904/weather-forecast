@@ -97,7 +97,7 @@ export default function Weather() {
             <p className="text-2xl font-semibold text-[#e6e4e4ba] pl-6 leading-6">Home</p>
           </div>
           <div className="heading">
-            <h1 className="text-4xl font-semibold mt-12 mb-8 flex justify-between items-center">
+            <h1 className="text-2xl md:text-3xl lg:text-4xl font-semibold mt-8 md:mt-12 mb-4 md:mb-6 lg:mb-8 flex justify-between items-center">
               {city.name}
               <div
                 className={
