@@ -28,7 +28,6 @@ body {
 }
 
 input {
-  margin: 2rem 0;
   border-radius: 40px;
   padding: 14px 15px 10px 60px;
   border: none;
@@ -84,17 +83,13 @@ input {
   border-radius: 10px;
   border: 1px solid rgb(100, 100, 100);
   background: #414141b4;
-  padding: 20px 2rem;
-  margin-bottom: 2rem;
 }
 
-.location-container {
+.weather-card {
   display: flex;
   border-radius: 10px;
   border: 1px solid rgb(100, 100, 100);
   background: rgba(65, 65, 65, 0.7);
-  padding: 2rem 2rem;
-  margin-bottom: 2rem;
   position: relative;
   justify-content: space-between;
   align-items: center;
@@ -109,7 +104,6 @@ input {
 
 .white-line {
   border: 1px solid rgb(255, 255, 255, 0.4);
-  margin: 20px 0;
 }
 
 ::-webkit-scrollbar {

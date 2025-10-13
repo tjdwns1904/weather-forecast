@@ -1,11 +1,10 @@
 import { useFavorites } from "@/hooks/useFavorites";
 import { generateForecastURL } from "@/utils/urlGenerator";
 import { weatherApi } from "@/api/weatherApi";
-import { createSearchParams, useNavigate } from 'react-router-dom';
 import { useQueries } from "@tanstack/react-query";
+import WeatherCard from "./WeatherCard";
 
 export default function WeatherFavorites() {
-  const navigate = useNavigate();
   const { favorites } = useFavorites();
   const weatherQueries = useQueries({
     queries: favorites.map(({ name, place_id }) => ({
@@ -20,7 +19,7 @@ export default function WeatherFavorites() {
 
   return (
     <>
-      <h1 className="text-4xl font-semibold mt-12 mb-8">Your Favorites ({favorites.length}/4)</h1>
+      <h1 className="text-3xl md:text-4xl font-semibold my-4 md:my-8 lg:my-12">Your Favorites ({favorites.length}/4)</h1>
       {favorites.length === 0 ?
         <div className="text-center text-white my-12">
           <div className="fav-icon mx-auto opacity-60"></div>
@@ -32,19 +31,7 @@ export default function WeatherFavorites() {
           if (weather.isLoading) return <div key={favorites[i].place_id} className="loading-spinner mx-auto my-5" />
           else if (weather.data) {
             return (
-              <div key={favorites[i].place_id} className="location-container" onClick={() => {
-                const { name, place_id } = favorites[i];
-                navigate({
-                  pathname: "/weather", search: createSearchParams({
-                    city: name,
-                    place_id: place_id,
-                  }).toString()
-                });
-              }}>
-                <h1 className="text-4xl font-semibold m-0">{Math.floor(weather.data.temperature)}&deg;</h1>
-                <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{favorites[i].name[0].toUpperCase() + favorites[i].name.slice(1)}</span><br />{weather.data.summary}</p>
-                <img src={`/weathers/${weather.data.icon}.png`} alt="" />
-              </div>
+              <WeatherCard key={favorites[i].place_id} weather={weather.data} city={favorites[i].name} place_id={favorites[i].place_id}/>
             )
           }
           return <div key={favorites[i].place_id}></div>

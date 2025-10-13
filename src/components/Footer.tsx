@@ -5,7 +5,7 @@ export default function Footer() {
   return (
     <div className="py-8 text-center">
       <hr />
-      <p className="text-lg text-white mt-8 mb-4">© 2025 SEONGJOON HONG. All Rights Reserved.</p>
+      <p className="text-sm md:text-lg text-white mt-8 mb-4">© 2025 SEONGJOON HONG. All Rights Reserved.</p>
       <div className="flex justify-center gap-2 pb-4">
         <a className="mail icon" title="Click here to send me an Email!" href={mailto}></a>
         <a className="fb icon" title="Visit my Facebook" href={FB_LINK} target="_blank"></a>

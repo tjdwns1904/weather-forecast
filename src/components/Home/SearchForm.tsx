@@ -38,7 +38,7 @@ export default function SearchForm() {
         <input
           placeholder="Search..."
           onChange={handleChange}
-          className="w-full md:w-1/2 lg:w-1/3"
+          className="w-full md:w-1/2 lg:w-1/3 my-4 md:my-6 lg:my-8"
         />
       </form>
     </>

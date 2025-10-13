@@ -3,9 +3,9 @@ import { twJoin } from "tailwind-merge"
 
 export default function HourlyWeather({ weathers }: { weathers: WeatherInfo[] }) {
   return (
-    <div className="container w-full max-w-full">
-      <h2>Weather forecast</h2>
-      <div className="white-line"></div>
+    <div className="container w-full max-w-full px-6 md:px-8 py-3 md:py-5 mb-4 md:mb-6 lg:mb-8">
+      <h2 className="text-xl md:text-3xl font-semibold">Weather forecast</h2>
+      <div className="white-line my-3 md:my-5"></div>
       <div className="flex flex-nowrap overflow-x-scroll">
         {weathers.map((weather: WeatherInfo) => {
           return (

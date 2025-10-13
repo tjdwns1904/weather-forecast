@@ -27,10 +27,10 @@ export default function Compass({ speed, deg }: CompassProps) {
           ${speed < 15 ? 'bg-blue-500' : speed < 33 ? 'bg-yellow-600' : 'bg-red-700'}
           `}
         >
-          <p className="leading-none font-semibold mb-0">
+          <p className="text-xl md:text-2xl leading-none font-semibold mb-0">
             {speed}
             <br />
-            <span className="text-xl">m/s</span>
+            <span>m/s</span>
           </p>
         </div>
       </div>
@@ -39,12 +39,12 @@ export default function Compass({ speed, deg }: CompassProps) {
 }
 
 const DIRECTIONS = [
-  { name: "N", style: "absolute top-0 left-1/2 -translate-x-1/2 text-xl font-semibold" },
-  { name: "E", style: "absolute top-1/2 right-1 -translate-y-1/2 text-xl font-semibold" },
-  { name: "S", style: "absolute bottom-0 left-1/2 -translate-x-1/2 text-xl font-semibold" },
-  { name: "W", style: "absolute top-1/2 left-1 -translate-y-1/2 text-xl font-semibold" },
-  { name: "NW", style: "absolute top-[15%] left-[15%] text-lg font-semibold" },
-  { name: "NE", style: "absolute top-[15%] right-[15%] text-lg font-semibold" },
-  { name: "SW", style: "absolute bottom-[15%] left-[15%] text-lg font-semibold" },
-  { name: "SE", style: "absolute bottom-[15%] right-[15%] text-lg font-semibold" },
+  { name: "N", style: "absolute top-0 left-1/2 -translate-x-1/2 text-lg md:text-xl font-semibold" },
+  { name: "E", style: "absolute top-1/2 right-1 -translate-y-1/2 text-lg md:text-xl font-semibold" },
+  { name: "S", style: "absolute bottom-0 left-1/2 -translate-x-1/2 text-lg md:text-xl font-semibold" },
+  { name: "W", style: "absolute top-1/2 left-1 -translate-y-1/2 text-lg md:text-xl font-semibold" },
+  { name: "NW", style: "absolute top-[15%] left-[15%] text-sm md:text-lg font-semibold" },
+  { name: "NE", style: "absolute top-[15%] right-[15%] text-sm md:text-lg font-semibold" },
+  { name: "SW", style: "absolute bottom-[15%] left-[15%] text-sm md:text-lg font-semibold" },
+  { name: "SE", style: "absolute bottom-[15%] right-[15%] text-sm md:text-lg font-semibold" },
 ];
