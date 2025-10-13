@@ -83,14 +83,14 @@ export default function WeatherByLocation() {
       <h1 className="text-3xl md:text-4xl font-semibold my-4 md:my-8 lg:my-12">Your Location</h1>
       {isGPSAllowed ?
         (isPlaceLoading || isLoading) ?
-          <div className="loading-spinner mx-auto my-5" />
+          <div className="loading-spinner w-[40px] md:w-[60px] lg:w-[80px] aspect-square mx-auto my-5" />
           :
           (place && weather && !error) ?
           <WeatherCard weather={weather} city={place.name} place_id={place.place_id} />
           :
           <div>{error?.title}</div>
         :
-        <button className="btn-byLocation" onClick={() => {
+        <button className="btn-byLocation mb-4 md:mb-6 lg:mb-8" onClick={() => {
           getLocation();
         }}>
           Weather by your location
