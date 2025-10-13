@@ -120,7 +120,7 @@ export default function Weather() {
   } else {
     return (
       <>
-        <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner"></div></div>
+        <div className="absolute top-1/2 left-1/2 -translate-1/2"><div className="loading-spinner w-[80px]"></div></div>
       </>
     )
   }
