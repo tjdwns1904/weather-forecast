@@ -4,7 +4,7 @@ import { generateForecastURL, generatePlaceURLByPosition } from "@/utils/urlGene
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
-import { createSearchParams, useNavigate } from "react-router-dom";
+import WeatherCard from "./WeatherCard";
 
 interface Coords {
   latitude: number;
@@ -12,7 +12,6 @@ interface Coords {
 };
 
 export default function WeatherByLocation() {
-  const navigate = useNavigate();
   const [isGPSAllowed, setIsGPSAllowed] = useState(localStorage.getItem('isGPSAllowed') ? Boolean(localStorage.getItem('isGPSAllowed')) : false);
   const [location, setLocation] = useState<Coords | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
@@ -80,25 +79,14 @@ export default function WeatherByLocation() {
   }, [getLocation, isGPSAllowed]);
 
   return (
-    <div className="byLocation-container">
-      <h1 className="byLocation text-4xl font-semibold mt-12 mb-8">Your Location</h1>
+    <div>
+      <h1 className="text-3xl md:text-4xl font-semibold my-4 md:my-8 lg:my-12">Your Location</h1>
       {isGPSAllowed ?
         (isPlaceLoading || isLoading) ?
           <div className="loading-spinner mx-auto my-5" />
           :
           (place && weather && !error) ?
-          <div className="location-container" onClick={() => {
-            navigate({
-              pathname: "/weather", search: createSearchParams({
-                city: place.name,
-                place_id: place.place_id,
-              }).toString()
-            });
-          }}>
-            <h1 className="text-4xl font-semibold m-0">{Math.floor(weather.temperature)}&deg;</h1>
-            <p className="text-lg text-center mb-0"><span className="text-2xl font-bold">{place.name}</span><br />{weather.summary}</p>
-            <img src={`/weathers/${weather.icon}.png`} alt="" />
-          </div>
+          <WeatherCard weather={weather} city={place.name} place_id={place.place_id} />
           :
           <div>{error?.title}</div>
         :
